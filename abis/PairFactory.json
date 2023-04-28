@@ -1,5 +1,29 @@
 [
-  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "volatileFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "stableFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "changeMadeTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeesChanged",
+    "type": "event"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -79,6 +103,13 @@
   {
     "inputs": [],
     "name": "MAX_REFERRAL_FEE",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_REFERRAL_FEE_",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -229,8 +260,8 @@
   },
   {
     "inputs": [
-      { "internalType": "bool", "name": "_stable", "type": "bool" },
-      { "internalType": "uint256", "name": "_fee", "type": "uint256" }
+      { "internalType": "uint256", "name": "_stableFee", "type": "uint256" },
+      { "internalType": "uint256", "name": "_volatileFee", "type": "uint256" }
     ],
     "name": "setFee",
     "outputs": [],

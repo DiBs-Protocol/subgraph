@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Router
-    network: bsc
+    name: ChronosReferrals
+    network: arbitrum-one
     source:
-      address: "0xd4ae6eCA985340Dd434D38F470aCCce4DC78D109"
-      abi: Router
-      startBlock: 25238657
+      address: "0xe305A20C548Fc6a99cC57424262575Cb696052C2"
+      abi: ChronosReferrals
+      startBlock: 85072311
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -16,6 +16,8 @@ dataSources:
       entities:
         - Swap
       abis:
+        - name: ChronosReferrals
+          file: ./abis/ChronosReferrals.json
         - name: PairFactory
           file: ./abis/PairFactory.json
         - name: Dibs
@@ -29,16 +31,16 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: Swap(indexed address,uint256,address,indexed address,bool)
+        - event: Swap(indexed address,uint256,address,bool)
           handler: handleSwap
       file: ./src/main.ts
   - kind: ethereum
     name: PairFactoryUpgradeable
-    network: bsc
+    network: arbitrum-one
     source:
-      address: "0xAFD89d21BdB66d00817d4153E055830B1c2B3970"
+      address: "0xCe9240869391928253Ed9cc9Bcb8cb98CB5B0722"
       abi: PairFactory
-      startBlock: 24468802
+      startBlock: 81922397
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

@@ -101,3 +101,10 @@ type PathToTarget @entity {
   target: Bytes!
   path: [Bytes!]! # path of pairs
 }
+
+type PlatformWithdrawableBalance @entity {
+  id: ID! # token
+  token: Bytes!
+  amount: BigInt!
+  lastUpdate: BigInt!
+}

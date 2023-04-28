@@ -9,7 +9,7 @@ import {
   TokenToPair,
 } from "../generated/schema";
 
-const WBNB = Address.fromString("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c");
+const weth = Address.fromString("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1");
 
 const TOKEN_DATA_ID = "TOKEN_DATA";
 
@@ -59,22 +59,9 @@ function getPairs(token: Address): Pair[] {
   if (!tokenToPair) {
     return [];
   } else {
-    return tokenToPair.pairs
-      .map<Pair>((strPairAddress) => Pair.load(strPairAddress)!)
-      .filter(
-        (pair): bool => {
-          const thePair = ThePair.bind(Address.fromString(pair.id));
-          const reserves = thePair.getReserves();
-
-          return !(
-            // low liquidity
-            (
-              reserves.value0.lt(BigInt.fromI64(10000000000)) ||
-              reserves.value1.lt(BigInt.fromI64(10000000000))
-            )
-          );
-        }
-      );
+    return tokenToPair.pairs.map<Pair>(
+      (strPairAddress) => Pair.load(strPairAddress)!
+    );
   }
 }
 
@@ -193,6 +180,6 @@ export function handlePairCreated(event: PairCreated): void {
   const tokens = getTokens();
 
   tokens.forEach((token) => {
-    calculatePathToTarget(token, WBNB);
+    calculatePathToTarget(token, weth);
   });
 }

@@ -1,8 +1,6 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import {
-  Router__getAmountsOutInputRoutesStruct,
-  Swap,
-} from "../generated/Router/Router";
+import { Router__getAmountsOutInputRoutesStruct } from "../generated/ChronosReferrals/Router";
+import { Swap } from "../generated/ChronosReferrals/ChronosReferrals";
 import {
   AccumulativeTokenBalance,
   Referral,
@@ -15,16 +13,17 @@ import {
   DailyGeneratedVolume,
   PathToTarget,
   Pair,
+  PlatformWithdrawableBalance,
 } from "../generated/schema";
-import { Dibs } from "../generated/Router/Dibs";
-import { DibsLottery } from "../generated/Router/DibsLottery";
-import { EACAggregatorProxy } from "../generated/Router/EACAggregatorProxy";
+import { Dibs } from "../generated/ChronosReferrals/Dibs";
+import { DibsLottery } from "../generated/ChronosReferrals/DibsLottery";
+import { EACAggregatorProxy } from "../generated/ChronosReferrals/EACAggregatorProxy";
 
 export const ZERO_ADDRESS = Address.fromHexString(
   "0x0000000000000000000000000000000000000000"
 );
 
-export const EPOCH_START_TIMESTAMP = BigInt.fromI32(1673481600);
+export const EPOCH_START_TIMESTAMP = BigInt.fromI32(1682553600);
 export const EPOCH_LENGTH = BigInt.fromI32(604800);
 
 export function getRound(timestamp: BigInt): BigInt {
@@ -228,9 +227,9 @@ export function createSwapLog(
   );
   swap.txHash = event.transaction.hash;
   swap.logIndex = event.logIndex;
-  swap.user = event.params.sender;
-  swap.tokenIn = event.params._tokenIn;
-  swap.amountIn = event.params.amount0In;
+  swap.user = event.params.user;
+  swap.tokenIn = event.params.tokenIn;
+  swap.amountIn = event.params.amountIn;
   swap.volumeInBNB = volumeInBNB;
   swap.BNBPrice = BNBPrice;
   swap.volumeInDollars = volumeInDollars;
@@ -238,24 +237,6 @@ export function createSwapLog(
   swap.stable = event.params.stable;
   swap.timestamp = event.block.timestamp;
   swap.save();
-}
-
-export function getBNBChainLink(): EACAggregatorProxy {
-  return EACAggregatorProxy.bind(
-    Address.fromString("0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE")
-  );
-}
-
-export function getDIBS(): Dibs {
-  return Dibs.bind(
-    Address.fromString("0x664cE330511653cB2744b8eD50DbA31C6c4C08ca")
-  );
-}
-
-export function getDIBSLottery(): DibsLottery {
-  return DibsLottery.bind(
-    Address.fromString("0x287ed50e4c158dac38e1b7e16c50cd1b2551a300")
-  );
 }
 
 function e18(amount: BigInt): BigInt {
@@ -290,6 +271,22 @@ export function getRoutes(
     }
     return routes;
   }
+}
+
+export function updatePlatformWithdrawableAmount(
+  token: Address,
+  amount: BigInt,
+  timestamp: BigInt
+): void {
+  let pwa = PlatformWithdrawableBalance.load(token.toHexString());
+  if (pwa == null) {
+    pwa = new PlatformWithdrawableBalance(token.toHexString());
+    pwa.amount = amount;
+  } else {
+    pwa.amount = pwa.amount.plus(amount);
+  }
+  pwa.lastUpdate = timestamp;
+  pwa.save();
 }
 
 export function getRewardPercentage(volume: BigInt): BigInt {

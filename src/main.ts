@@ -1,7 +1,8 @@
-import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { PairFactory } from "../generated/Router/PairFactory";
-import { ERC20 } from "../generated/Router/ERC20";
-import { Router, Swap } from "../generated/Router/Router";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { PairFactory } from "../generated/ChronosReferrals/PairFactory";
+import { ERC20 } from "../generated/ChronosReferrals/ERC20";
+import { Router } from "../generated/ChronosReferrals/Router";
+import { Swap } from "../generated/ChronosReferrals/ChronosReferrals";
 
 import {
   ZERO_ADDRESS,
@@ -9,62 +10,42 @@ import {
   getOrCreateGeneratedVolume,
   createReferral,
   createSwapLog,
-  getDIBS as getDibs,
   getOrCreateLottery,
   getOrCreateUserLottery,
-  getDIBSLottery as getDibsLottery,
-  getBNBChainLink as getPriceFeed,
   updateVolume,
   VolumeType,
   getRewardPercentage,
   getNumberOfTickets,
   getOrCreateWeeklyGeneratedVolume,
   getRoutes,
+  updatePlatformWithdrawableAmount,
 } from "./utils";
-import { Dibs } from "../generated/Router/Dibs";
-import { DibsLottery } from "../generated/Router/DibsLottery";
-import { EACAggregatorProxy } from "../generated/Router/EACAggregatorProxy";
+import { Dibs } from "../generated/ChronosReferrals/Dibs";
+import { DibsLottery } from "../generated/ChronosReferrals/DibsLottery";
+import { EACAggregatorProxy } from "../generated/ChronosReferrals/EACAggregatorProxy";
+import { PlatformWithdrawableBalance } from "../generated/schema";
 
 export function handleSwap(event: Swap): void {
   // extract swap params from event
-  const token = event.params._tokenIn;
-  const user = event.params.sender;
-  const amount = event.params.amount0In;
+  const token = event.params.tokenIn;
+  const user = event.params.user;
+  const amount = event.params.amountIn;
   const timestamp = event.block.timestamp;
-  const routerAddress = event.address;
 
-  const router = Router.bind(routerAddress);
-  const pairFactory = PairFactory.bind(router.factory());
+  const router = Router.bind(
+    Address.fromString("0xE708aA9E887980750C040a6A2Cb901c37Aa34f3b")
+  );
+  const pairFactory = PairFactory.bind(
+    Address.fromString("0xCe9240869391928253Ed9cc9Bcb8cb98CB5B0722")
+  );
   const dibs = Dibs.bind(pairFactory.dibs());
   const dibsLottery = DibsLottery.bind(dibs.dibsLottery());
   const wethPriceFeed = EACAggregatorProxy.bind(dibs.wethPriceFeed());
 
   const inputToken = ERC20.bind(token);
-
   const round = dibsLottery.getActiveLotteryRound();
 
-  // check if user is not registered in the dibs contract
-  // then return
-  const userCode = dibs.addressToCode(user);
-  if (userCode == Bytes.empty()) {
-    return;
-  }
-
-  // since all registered users have a parent,
-  // we can get the parent and grandparent address
-  const parentAddress = dibs.parents(user);
-  let grandParentAddress = dibs.parents(parentAddress);
-
-  if (parentAddress == ZERO_ADDRESS) {
-    return;
-  }
-
-  // if the grandparent address is address 0x0, set grandparent address to dibs address
-  if (grandParentAddress == ZERO_ADDRESS) {
-    grandParentAddress = dibs.codeToAddress(dibs.DIBS());
-  }
-
-  // get volume in BNB
+  // get volume in weth
   let volumeInWeth: BigInt;
 
   const precision = 4;
@@ -98,6 +79,28 @@ export function handleSwap(event: Swap): void {
     .times(volumeInWeth)
     .div(BigInt.fromI32(10).pow(u8(wethPriceFeed.decimals())));
 
+  createSwapLog(
+    event,
+    BigInt.fromI32(0),
+    volumeInWeth,
+    wethPriceFeed.latestAnswer(),
+    volumeInDollars
+  );
+
+  // since all registered users have a parent,
+  // we can get the parent and grandparent address
+  const parentAddress = dibs.parents(user);
+  let grandParentAddress = dibs.parents(parentAddress);
+
+  if (parentAddress == ZERO_ADDRESS) {
+    return;
+  }
+
+  // if the grandparent address is address 0x0, set grandparent address to dibs address
+  if (grandParentAddress == ZERO_ADDRESS) {
+    grandParentAddress = dibs.codeToAddress(dibs.DIBS());
+  }
+
   // update generated volume for user, parent and grandparent
   updateVolume(user, volumeInDollars, timestamp, VolumeType.USER);
   updateVolume(parentAddress, volumeInDollars, timestamp, VolumeType.PARENT);
@@ -112,12 +115,14 @@ export function handleSwap(event: Swap): void {
   const feeScale = 10000;
   const feeRate = pairFactory.getFee(event.params.stable);
   const feeAmount = amount.times(feeRate).div(BigInt.fromI32(feeScale));
-  const rewardPercentage = getRewardPercentage(
+  const maxReferralFee = pairFactory.MAX_REFERRAL_FEE();
+  const referralFee = getRewardPercentage(
     getOrCreateGeneratedVolume(parentAddress).amountAsReferrer
   );
-  const rewardAmount = feeAmount
-    .times(rewardPercentage)
+  const maxRewardAmount = feeAmount
+    .times(maxReferralFee)
     .div(BigInt.fromI32(10000));
+  const rewardAmount = feeAmount.times(referralFee).div(BigInt.fromI32(10000));
 
   // calculate the amount of tokens that the parent and grandparent and dibs platform will receive
   const scale = dibs.SCALE();
@@ -128,6 +133,13 @@ export function handleSwap(event: Swap): void {
     .div(scale);
   const dibsAmount = rewardAmount.times(dibsPercentage).div(scale);
   const parentAmount = rewardAmount.minus(grandParentAmount.plus(dibsAmount));
+  const platformWithdrawableAmount = maxRewardAmount.minus(rewardAmount);
+
+  updatePlatformWithdrawableAmount(
+    token,
+    platformWithdrawableAmount,
+    timestamp
+  );
 
   // add the reward amount to the accumulative token balance for the parent, grandparent and dibs platform
   addAccumulativeTokenBalance(token, parentAddress, parentAmount, timestamp);
@@ -146,13 +158,6 @@ export function handleSwap(event: Swap): void {
 
   // create a referral if it does not exist
   createReferral(parentAddress, user);
-  createSwapLog(
-    event,
-    round,
-    volumeInWeth,
-    wethPriceFeed.latestAnswer(),
-    volumeInDollars
-  );
 
   const lottery = getOrCreateLottery(round);
   const userLottery = getOrCreateUserLottery(round, user);
