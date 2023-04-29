@@ -87,6 +87,19 @@ export function handleSwap(event: Swap): void {
     volumeInDollars
   );
 
+  // calculate total amount of reward based on MAX_REFERRAL_FEE from pairFactory
+  const feeScale = 10000;
+  const feeRate = pairFactory.getFee(event.params.stable);
+  const feeAmount = amount.times(feeRate).div(BigInt.fromI32(feeScale));
+  const maxReferralFee = pairFactory.MAX_REFERRAL_FEE();
+
+  const maxRewardAmount = feeAmount
+    .times(maxReferralFee)
+    .div(BigInt.fromI32(10000));
+
+  // upto this point, all the fees that have been transferred can be withdrawn by the platform
+  updatePlatformWithdrawableAmount(token, maxRewardAmount, timestamp);
+
   // since all registered users have a parent,
   // we can get the parent and grandparent address
   const parentAddress = dibs.parents(user);
@@ -111,18 +124,17 @@ export function handleSwap(event: Swap): void {
     VolumeType.GRANDPARENT
   );
 
-  // calculate total amount of reward based on MAX_REFERRAL_FEE from pairFactory
-  const feeScale = 10000;
-  const feeRate = pairFactory.getFee(event.params.stable);
-  const feeAmount = amount.times(feeRate).div(BigInt.fromI32(feeScale));
-  const maxReferralFee = pairFactory.MAX_REFERRAL_FEE();
   const referralFee = getRewardPercentage(
     getOrCreateGeneratedVolume(parentAddress).amountAsReferrer
   );
-  const maxRewardAmount = feeAmount
-    .times(maxReferralFee)
-    .div(BigInt.fromI32(10000));
   const rewardAmount = feeAmount.times(referralFee).div(BigInt.fromI32(10000));
+
+  // the reward amount cannot be withdrawn by the platform
+  updatePlatformWithdrawableAmount(
+    token,
+    rewardAmount.times(BigInt.fromI32(-1)),
+    timestamp
+  );
 
   // calculate the amount of tokens that the parent and grandparent and dibs platform will receive
   const scale = dibs.SCALE();
@@ -133,13 +145,6 @@ export function handleSwap(event: Swap): void {
     .div(scale);
   const dibsAmount = rewardAmount.times(dibsPercentage).div(scale);
   const parentAmount = rewardAmount.minus(grandParentAmount.plus(dibsAmount));
-  const platformWithdrawableAmount = maxRewardAmount.minus(rewardAmount);
-
-  updatePlatformWithdrawableAmount(
-    token,
-    platformWithdrawableAmount,
-    timestamp
-  );
 
   // add the reward amount to the accumulative token balance for the parent, grandparent and dibs platform
   addAccumulativeTokenBalance(token, parentAddress, parentAmount, timestamp);
