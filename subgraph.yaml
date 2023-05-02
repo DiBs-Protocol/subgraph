@@ -8,13 +8,13 @@ dataSources:
     source:
       address: "0x6DEFa7058D517f2DADA60D79b7e26Ab8A1219aCa"
       abi: DegenZoo
-      startBlock: 27720589
+      startBlock: 27868558
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Swap
+        - RequestHatchLog
       abis:
         - name: Pair
           file: ./abis/Pair.json
@@ -31,4 +31,24 @@ dataSources:
       eventHandlers:
         - event: RequestHatch(address,uint256,uint256,uint256,address)
           handler: handleRequestHatch
+      file: ./src/main.ts
+  - kind: ethereum
+    name: Dibs
+    network: bsc
+    source:
+      address: "0x3fBA73Fc55dd7cb286F963793F5301E92cC07B57"
+      abi: Dibs
+      startBlock: 27868558
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Referral
+      abis:
+        - name: Dibs
+          file: ./abis/Dibs.json
+      eventHandlers:
+        - event: Register(indexed address,indexed bytes32,string,address)
+          handler: handleRegister
       file: ./src/main.ts

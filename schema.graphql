@@ -13,6 +13,7 @@ type RequestHatchLog @entity {
   tokenId: BigInt!
   requestId: BigInt!
   amount: BigInt!
+  amountUsd: BigInt!
   referrer: Bytes!
   timestamp: BigInt!
 }

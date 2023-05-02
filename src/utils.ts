@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 import {
   Referral,
@@ -177,9 +177,10 @@ export function getOrCreateUserLottery(
   }
   return userLottery;
 }
-export function getOrCreateReferral(
+export function createReferral(
   referrer: Address,
-  user: Address
+  user: Address,
+  txHash: Bytes | null = null
 ): Referral {
   let id = user.toHex();
   let referral = Referral.load(id);
@@ -187,6 +188,7 @@ export function getOrCreateReferral(
     referral = new Referral(id);
     referral.user = user;
     referral.referrer = referrer;
+    referral.txHash = txHash!;
     referral.save();
   }
   return referral;
@@ -206,24 +208,22 @@ export function getDzooPrice(): BigInt {
   const dzooPrice = getBnbChainLink()
     .latestAnswer()
     .times(wbnbPerDzoo)
-    .div(BigInt.fromI32(10).pow(18 + getBnbChainLink().decimals()));
+    .div(BigInt.fromI32(10).pow(u8(getBnbChainLink().decimals())));
 
   return dzooPrice;
 }
 
 export function getBnbChainLink(): EACAggregatorProxy {
-  return EACAggregatorProxy.bind(
-    Address.fromString("0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE")
-  );
+  return EACAggregatorProxy.bind(getDibs().wethPriceFeed());
 }
 
 export function getDibs(): Dibs {
   return Dibs.bind(
-    Address.fromString("0x664cE330511653cB2744b8eD50DbA31C6c4C08ca")
+    Address.fromString("0x3fBA73Fc55dd7cb286F963793F5301E92cC07B57")
   );
 }
 
-function e18(amount: BigInt): BigInt {
+export function e18(amount: BigInt): BigInt {
   const E18 = BigInt.fromI32(10).pow(18);
   return amount.times(E18);
 }

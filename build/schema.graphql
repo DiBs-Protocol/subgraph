@@ -1,3 +1,11 @@
+type AccumulativeTokenBalance @entity {
+  id: ID! # tokenAddress + userAddress
+  user: Bytes!
+  token: Bytes!
+  amount: BigInt!
+  lastUpdate: BigInt!
+}
+
 type RequestHatchLog @entity {
   id: ID! # txHash + logIndex
   txHash: Bytes!
@@ -5,6 +13,7 @@ type RequestHatchLog @entity {
   tokenId: BigInt!
   requestId: BigInt!
   amount: BigInt!
+  amountUsd: BigInt!
   referrer: Bytes!
   timestamp: BigInt!
 }
@@ -23,7 +32,8 @@ type UserLottery @entity {
 }
 
 type Referral @entity {
-  id: ID! # userAddress + referralAddress
+  id: ID! # userAddress
+  txHash: Bytes! # transaction where this user first interacted with our system
   user: Bytes!
   referrer: Bytes!
 }
