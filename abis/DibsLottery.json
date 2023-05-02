@@ -1,20 +1,23 @@
 [
   { "inputs": [], "name": "AlreadyClaimed", "type": "error" },
+  {
+    "inputs": [],
+    "name": "DayMustBeGreaterThanLastUpdatedDay",
+    "type": "error"
+  },
+  { "inputs": [], "name": "DayNotOver", "type": "error" },
+  { "inputs": [], "name": "InvalidInput", "type": "error" },
   { "inputs": [], "name": "LotteryRoundAlreadyOver", "type": "error" },
   { "inputs": [], "name": "LotteryRoundNotOver", "type": "error" },
+  { "inputs": [], "name": "NoLeaderBoardData", "type": "error" },
   { "inputs": [], "name": "NotMuonInterface", "type": "error" },
   { "inputs": [], "name": "NotWinner", "type": "error" },
   { "inputs": [], "name": "TooManyWinners", "type": "error" },
+  { "inputs": [], "name": "TopReferrersAlreadySet", "type": "error" },
   { "inputs": [], "name": "ZeroValue", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_round",
-        "type": "uint32"
-      },
       {
         "indexed": false,
         "internalType": "address",
@@ -166,7 +169,26 @@
         "type": "address"
       }
     ],
-    "name": "SetMuonInterface",
+    "name": "SetDibs",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "_rewardTokens",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "_rewardAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "SetLotteryRewards",
     "type": "event"
   },
   {
@@ -226,6 +248,7 @@
     "name": "SetWinnersPerRound",
     "type": "event"
   },
+
   {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
@@ -242,17 +265,31 @@
   },
   {
     "inputs": [
-      { "internalType": "uint32", "name": "roundId", "type": "uint32" },
-      { "internalType": "address", "name": "to", "type": "address" }
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
     ],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "to", "type": "address" }],
     "name": "claimReward",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "uint32", "name": "_day", "type": "uint32" }],
+    "name": "findLeaderBoardIndex",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "firstRoundStartTime",
+    "name": "getActiveDay",
     "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
     "stateMutability": "view",
     "type": "function"
@@ -264,12 +301,87 @@
     "stateMutability": "view",
     "type": "function"
   },
+
+  {
+    "inputs": [],
+    "name": "getLeaderBoardsLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRewardTokensAndAmounts",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRewardTokensCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
   {
     "inputs": [
       { "internalType": "bytes32", "name": "role", "type": "bytes32" }
     ],
     "name": "getRoleAdmin",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint32", "name": "roundId", "type": "uint32" }
+    ],
+    "name": "getRoundWinners",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint32", "name": "day", "type": "uint32" }],
+    "name": "getTopReferrers",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getUserTokensAndBalance",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getWinningDays",
+    "outputs": [{ "internalType": "uint32[]", "name": "", "type": "uint32[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getWinningDaysCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -295,19 +407,39 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "_firstRoundStartTime",
-        "type": "uint32"
-      },
-      { "internalType": "uint32", "name": "_roundDuration", "type": "uint32" },
-      { "internalType": "uint8", "name": "_winnersPerRound", "type": "uint8" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "hasToken",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "_admin", "type": "address" },
       { "internalType": "address", "name": "_setter", "type": "address" }
     ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastRefDay",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "leaderBoards",
+    "outputs": [
+      { "internalType": "uint32", "name": "lastUpdatedDay", "type": "uint32" },
+      { "internalType": "uint8", "name": "count", "type": "uint8" }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -355,13 +487,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "roundDuration",
-    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "uint32", "name": "", "type": "uint32" },
       { "internalType": "uint256", "name": "", "type": "uint256" }
@@ -380,9 +505,38 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_muonInterface", "type": "address" }
+      { "internalType": "address[]", "name": "users", "type": "address[]" },
+      { "internalType": "address[]", "name": "token", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "amount", "type": "uint256[]" }
     ],
-    "name": "setMuonInterface",
+    "name": "setBalanceOf",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "dibs_", "type": "address" }
+    ],
+    "name": "setDibs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_rewardTokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_rewardAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setLotteryRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -391,7 +545,7 @@
     "inputs": [
       {
         "internalType": "uint256[]",
-        "name": "_rewardAmount",
+        "name": "_rewardAmounts",
         "type": "uint256[]"
       }
     ],
@@ -404,7 +558,7 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_rewardToken",
+        "name": "_rewardTokens",
         "type": "address[]"
       }
     ],
@@ -419,6 +573,16 @@
       { "internalType": "address[]", "name": "winners", "type": "address[]" }
     ],
     "name": "setRoundWinners",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint32", "name": "_day", "type": "uint32" },
+      { "internalType": "address[]", "name": "_referrers", "type": "address[]" }
+    ],
+    "name": "setTopReferrers",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -442,9 +606,40 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint32", "name": "", "type": "uint32" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "topReferrers",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "userTokens",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "winnersPerRound",
     "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "winningDays",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
     "stateMutability": "view",
     "type": "function"
   }

@@ -1,23 +1,11 @@
-type AccumulativeTokenBalance @entity {
-  id: ID! # tokenAddress + userAddress
-  user: Bytes!
-  token: Bytes!
-  amount: BigInt!
-  lastUpdate: BigInt!
-}
-
-type SwapLog @entity {
+type RequestHatchLog @entity {
   id: ID! # txHash + logIndex
   txHash: Bytes!
-  logIndex: BigInt!
   user: Bytes!
-  tokenIn: Bytes!
-  amountIn: BigInt!
-  volumeInBNB: BigInt!
-  BNBPrice: BigInt!
-  volumeInDollars: BigInt!
-  round: BigInt!
-  stable: Boolean!
+  tokenId: BigInt!
+  requestId: BigInt!
+  amount: BigInt!
+  referrer: Bytes!
   timestamp: BigInt!
 }
 
@@ -76,28 +64,4 @@ type AccumulativeGeneratedVolume @entity {
   amountAsReferrer: BigInt!
   amountAsGrandparent: BigInt!
   lastUpdate: BigInt!
-}
-
-type Pair @entity {
-  id: ID! # pair address
-  token0: Bytes!
-  token1: Bytes!
-  stable: Boolean!
-}
-
-type TokenToPair @entity {
-  id: ID! # token
-  pairs: [Pair!]! # list of direct pairs
-}
-
-type TokenData @entity {
-  id: ID! # TOKEN_DATA
-  tokens: [Bytes!]! # list of all tokens
-}
-
-type PathToTarget @entity {
-  id: ID! # token address + target
-  token: Bytes!
-  target: Bytes!
-  path: [Bytes!]! # path of pairs
 }
