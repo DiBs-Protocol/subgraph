@@ -8,6 +8,7 @@ import {
   AccumulativeGeneratedVolume,
   WeeklyGeneratedVolume,
   DailyGeneratedVolume,
+  AccumulativeTokenBalance,
 } from "../generated/schema";
 import { Dibs } from "../generated/DegenZoo/Dibs";
 import { Pair } from "../generated/DegenZoo/Pair";
@@ -17,6 +18,13 @@ import { EACAggregatorProxy } from "../generated/DegenZoo/EACAggregatorProxy";
 
 export const ZERO_ADDRESS = Address.fromHexString(
   "0x0000000000000000000000000000000000000000"
+);
+
+export const wDZOO = Address.fromString(
+  "0x56d06a78Ef8E95D6043341f24759e2834BE6f97B"
+);
+export const wBNBwDZOOPair = Address.fromString(
+  "0xd6251Ba6Af2002588f89D3c599A9929f6b0F6A99"
 );
 
 export enum VolumeType {
@@ -31,6 +39,27 @@ export function getRound(): BigInt {
 
 export function getDay(): BigInt {
   return DibsLottery.bind(getDibs().dibsLottery()).getActiveDay();
+}
+
+export function addAccumulativeTokenBalance(
+  token: Address,
+  user: Address,
+  amount: BigInt,
+  timestamp: BigInt
+): void {
+  let id = token.toHex() + "-" + user.toHex();
+  let accumulativeTokenBalance = AccumulativeTokenBalance.load(id);
+  if (accumulativeTokenBalance == null) {
+    accumulativeTokenBalance = new AccumulativeTokenBalance(id);
+    accumulativeTokenBalance.token = token;
+    accumulativeTokenBalance.user = user;
+    accumulativeTokenBalance.amount = BigInt.fromI32(0);
+  }
+  accumulativeTokenBalance.amount = accumulativeTokenBalance.amount.plus(
+    amount
+  );
+  accumulativeTokenBalance.lastUpdate = timestamp;
+  accumulativeTokenBalance.save();
 }
 
 export function getOrCreateGeneratedVolume(user: Address): GeneratedVolume {
@@ -195,9 +224,7 @@ export function createReferral(
 }
 
 export function getDzooPrice(): BigInt {
-  const pair = Pair.bind(
-    Address.fromString("0xd6251Ba6Af2002588f89D3c599A9929f6b0F6A99")
-  );
+  const pair = Pair.bind(wBNBwDZOOPair);
 
   const reserves = pair.getReserves();
 

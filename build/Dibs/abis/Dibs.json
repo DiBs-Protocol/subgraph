@@ -1,26 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "dibs_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "admin_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "setter_",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "inputs": [],
     "name": "BalanceTooLow",
     "type": "error"
@@ -37,12 +16,17 @@
   },
   {
     "inputs": [],
-    "name": "LotteryRoundAlreadyOver",
+    "name": "InvalidPercentages",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LotteryRoundNotOver",
+    "name": "NotInternal",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotMuonInterface",
     "type": "error"
   },
   {
@@ -79,6 +63,19 @@
       }
     ],
     "name": "Claim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
     "type": "event"
   },
   {
@@ -192,68 +189,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint32",
-        "name": "_round",
-        "type": "uint32"
+        "internalType": "address",
+        "name": "_old",
+        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_winner",
+        "name": "_new",
         "type": "address"
       }
     ],
-    "name": "RoundWinner",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_old",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_new",
-        "type": "uint32"
-      }
-    ],
-    "name": "SetFirstRoundStartTime",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_oldGrandparent",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_newGrandparent",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_oldDibs",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "_newDibs",
-        "type": "uint32"
-      }
-    ],
-    "name": "SetGrandparentAndDibsPercentage",
+    "name": "SetMuonInterface",
     "type": "event"
   },
   {
@@ -281,17 +228,29 @@
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "_old",
+        "name": "_referrerPercentage",
         "type": "uint32"
       },
       {
         "indexed": false,
         "internalType": "uint32",
-        "name": "_new",
+        "name": "_refereePercentage",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "_grandparentPercentage",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "_dibsPercentage",
         "type": "uint32"
       }
     ],
-    "name": "SetRoundDuration",
+    "name": "SetPercentages",
     "type": "event"
   },
   {
@@ -322,25 +281,12 @@
   },
   {
     "inputs": [],
-    "name": "dibsLottery",
+    "name": "PROJECT_ID",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "bytes32",
         "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "wethPriceFeed",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -395,6 +341,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -407,32 +358,14 @@
         "internalType": "address",
         "name": "to",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accumulativeBalance",
+        "type": "uint256"
       }
     ],
     "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "claimDIBS",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -501,6 +434,19 @@
   },
   {
     "inputs": [],
+    "name": "dibsLottery",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "dibsPercentage",
     "outputs": [
       {
@@ -526,16 +472,41 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getActiveLotteryRound",
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getAddress",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "address",
         "name": "",
-        "type": "uint32"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getCode",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -635,6 +606,44 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "admin_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "setter_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "dibsLottery_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "wethPriceFeed_",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "firstRoundStartTime_",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "roundDuration_",
+        "type": "uint32"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -674,12 +683,33 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "refereePercentage",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "referrerPercentage",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "string",
         "name": "name",
@@ -689,6 +719,19 @@
         "internalType": "bytes32",
         "name": "parentCode",
         "type": "bytes32"
+      }
+    ],
+    "name": "register",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
       }
     ],
     "name": "register",
@@ -748,49 +791,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "name": "roundToWinner",
-    "outputs": [
-      {
         "internalType": "address",
-        "name": "",
+        "name": "_muonInterface",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "_firstRoundStartTime",
-        "type": "uint32"
-      }
-    ],
-    "name": "setFirstRoundStartTime",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "_grandparentPercentage",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_dibsPercentage",
-        "type": "uint32"
-      }
-    ],
-    "name": "setGrandparentAndDibsPercentage",
+    "name": "setMuonInterface",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -817,29 +823,26 @@
     "inputs": [
       {
         "internalType": "uint32",
-        "name": "_roundDuration",
-        "type": "uint32"
-      }
-    ],
-    "name": "setRoundDuration",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "roundId",
+        "name": "_refereePercentage",
         "type": "uint32"
       },
       {
-        "internalType": "address",
-        "name": "winner",
-        "type": "address"
+        "internalType": "uint32",
+        "name": "_referrerPercentage",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_grandparentPercentage",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_dibsPercentage",
+        "type": "uint32"
       }
     ],
-    "name": "setRoundWinner",
+    "name": "setPercentages",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -858,6 +861,19 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "wethPriceFeed",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

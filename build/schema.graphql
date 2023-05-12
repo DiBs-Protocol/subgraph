@@ -6,6 +6,13 @@ type AccumulativeTokenBalance @entity {
   lastUpdate: BigInt!
 }
 
+type TotalTokenBalance @entity {
+  id: ID! # tokenAddress
+  token: Bytes!
+  amount: BigInt!
+  lastUpdate: BigInt!
+}
+
 type RequestHatchLog @entity {
   id: ID! # txHash + logIndex
   txHash: Bytes!

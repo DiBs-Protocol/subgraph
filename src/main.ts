@@ -1,6 +1,10 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { RequestHatch } from "../generated/DegenZoo/DegenZoo";
-import { Referral, RequestHatchLog } from "../generated/schema";
+import {
+  Referral,
+  RequestHatchLog,
+  TotalTokenBalance,
+} from "../generated/schema";
 import {
   getDibs,
   getDzooPrice,
@@ -8,38 +12,73 @@ import {
   e18,
   updateVolume,
   VolumeType,
+  addAccumulativeTokenBalance,
+  wDZOO,
+  ZERO_ADDRESS,
 } from "./utils";
-import { Register } from "../generated/DegenZoo/Dibs";
 
-export function handleRegister(event: Register): void {
-  createReferral(
-    event.params._parent,
-    event.params._address,
-    event.transaction.hash
-  );
-}
-
-export function handleRequestHatch(event: RequestHatch): void {
-  const rhl = createRequestHatchLog(event);
-  createReferral(
-    Address.fromBytes(rhl.referrer),
-    Address.fromBytes(rhl.user),
-    event.transaction.hash
-  );
-
+function updateVolumes(rhl: RequestHatchLog): void {
   updateVolume(
     Address.fromBytes(rhl.user),
     rhl.amountUsd,
     rhl.timestamp,
     VolumeType.USER
   );
-  updateVolume(getParent(rhl), rhl.amountUsd, rhl.timestamp, VolumeType.PARENT);
   updateVolume(
-    getGrandParent(rhl),
+    getReferrer(rhl),
     rhl.amountUsd,
     rhl.timestamp,
-    VolumeType.GRANDPARENT
+    VolumeType.PARENT
   );
+}
+
+function updateBalances(rhl: RequestHatchLog): void {
+  const dibs = getDibs();
+  const refereePercentage = dibs.refereePercentage();
+  const referrerPercentage = dibs.referrerPercentage();
+  const scale = dibs.SCALE();
+
+  const referee = Address.fromBytes(rhl.user);
+  const referrer = getReferrer(rhl);
+
+  const refereeAmount = rhl.amount.times(refereePercentage).div(scale);
+  const referrerAmount = rhl.amount.times(referrerPercentage).div(scale);
+
+  addAccumulativeTokenBalance(wDZOO, referee, refereeAmount, rhl.timestamp);
+  addAccumulativeTokenBalance(wDZOO, referrer, referrerAmount, rhl.timestamp);
+
+  let totalTokenBalance = TotalTokenBalance.load(wDZOO.toHex());
+
+  if (totalTokenBalance == null) {
+    totalTokenBalance = new TotalTokenBalance(wDZOO.toHex());
+    totalTokenBalance.amount = BigInt.fromI32(0);
+    totalTokenBalance.token = wDZOO;
+  }
+
+  totalTokenBalance.amount = totalTokenBalance.amount.plus(
+    refereeAmount.plus(referrerAmount)
+  );
+  totalTokenBalance.lastUpdate = rhl.timestamp;
+  totalTokenBalance.save();
+}
+
+export function handleRequestHatch(event: RequestHatch): void {
+  const rhl = createRequestHatchLog(event);
+
+  // if the referrer is the zero address ignore it
+  if (rhl.referrer == ZERO_ADDRESS) {
+    return;
+  }
+
+  // todo: ignore if the referrer has not registered before hand.
+
+  createReferral(
+    Address.fromBytes(rhl.referrer),
+    Address.fromBytes(rhl.user),
+    event.transaction.hash
+  );
+  updateVolumes(rhl);
+  updateBalances(rhl);
 }
 
 function createRequestHatchLog(event: RequestHatch): RequestHatchLog {
@@ -61,18 +100,7 @@ function createRequestHatchLog(event: RequestHatch): RequestHatchLog {
   return rhl;
 }
 
-function getParent(rhl: RequestHatchLog): Address {
+function getReferrer(rhl: RequestHatchLog): Address {
   const referral = Referral.load(rhl.user.toHex());
   return Address.fromBytes(referral!.referrer);
-}
-
-function getGrandParent(rhl: RequestHatchLog): Address {
-  const referral = Referral.load(rhl.user.toHex());
-  const parentReferral = Referral.load(referral!.referrer.toHex());
-
-  if (parentReferral != null) {
-    return Address.fromBytes(parentReferral.referrer);
-  } else {
-    return getDibs()._address;
-  }
 }
