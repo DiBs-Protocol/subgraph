@@ -121,7 +121,7 @@ export class SwapHandler {
       this.user,
       token,
       amountIn,
-      this.pair.isStable(),
+      this.pair.stable(),
       volumeInWeth,
       this.priceFeed.latestAnswer(),
       volumeInDollars
