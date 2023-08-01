@@ -11,10 +11,7 @@ import {
 } from "../../generated/schema"
 
 import { PairReader } from "../../generated/templates"
-import { DIBS_START_BLOCK, WETH_PRICE_FEED } from "../../config/config"
-import { Sync } from "../../generated/templates/PairReader/Pair"
-
-const weth = Address.fromString(WETH_PRICE_FEED)
+import { WETH } from "../../config/config"
 
 const TOKEN_DATA_ID = "TOKEN_DATA"
 
@@ -210,7 +207,7 @@ export function updatePath(): void {
   const tokens = getTokens()
 
   tokens.forEach(token => {
-    calculatePathToTarget(token, weth)
+    calculatePathToTarget(token, Address.fromString(WETH))
   })
 }
 
