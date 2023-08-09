@@ -3,12 +3,7 @@ import { PairFactory } from "../../generated/templates/PairReader/PairFactory"
 import { ERC20 } from "../../generated/templates/PairReader/ERC20"
 import { Swap } from "../../generated/templates/PairReader/Pair"
 
-import {
-  zero_address,
-  createReferral,
-  updateVolume,
-  VolumeType
-} from "../utils"
+import { zero_address, createReferral, updateVolume, VolumeType } from "./utils"
 import { Pair } from "../../generated/templates/PairReader/Pair"
 import {
   PathToTarget,

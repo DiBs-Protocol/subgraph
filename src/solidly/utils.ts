@@ -4,9 +4,9 @@ import {
   GeneratedVolume,
   WeeklyGeneratedVolume,
   DailyGeneratedVolume
-} from "../generated/schema"
+} from "../../generated/schema"
 
-import { EPOCH_START_TIMESTAMP, EPOCH_DURATION } from "../config/config"
+import { EPOCH_START_TIMESTAMP, EPOCH_DURATION } from "../../config/config"
 
 const epochStartTimeStamp = BigInt.fromI32(EPOCH_START_TIMESTAMP)
 const epochDuration = BigInt.fromI32(EPOCH_DURATION)

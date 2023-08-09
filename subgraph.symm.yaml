@@ -1,6 +1,6 @@
 specVersion: 0.0.4
 schema:
-  file: schema.graphql
+  file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: SymmDataSource
@@ -17,8 +17,8 @@ dataSources:
         - OpenPosition
       abis:
         - name: v3
-          file: SymmDataSource/abis/v3.json
+          file: ./abis/v3.json
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256,uint8)
           handler: handleOpenPosition
-      file: SymmDataSource/SymmDataSource.wasm
+      file: ./src/symm/main.ts
