@@ -1,37 +1,25 @@
 [
-  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
-    "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "version",
-        "type": "uint8"
-      }
-    ],
-    "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
+        "name": "_implementation",
         "type": "address"
       }
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
+  { "inputs": [], "name": "FeeInvalid", "type": "error" },
+  { "inputs": [], "name": "FeeTooHigh", "type": "error" },
+  { "inputs": [], "name": "InvalidPool", "type": "error" },
+  { "inputs": [], "name": "NotFeeManager", "type": "error" },
+  { "inputs": [], "name": "NotPauser", "type": "error" },
+  { "inputs": [], "name": "NotVoter", "type": "error" },
+  { "inputs": [], "name": "PoolAlreadyExists", "type": "error" },
+  { "inputs": [], "name": "SameAddress", "type": "error" },
+  { "inputs": [], "name": "ZeroAddress", "type": "error" },
+  { "inputs": [], "name": "ZeroFee", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
@@ -48,7 +36,7 @@
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bool",
         "name": "stable",
         "type": "bool"
@@ -56,7 +44,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "pair",
+        "name": "pool",
         "type": "address"
       },
       {
@@ -66,7 +54,78 @@
         "type": "uint256"
       }
     ],
-    "name": "PairCreated",
+    "name": "PoolCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetCustomFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "feeManager",
+        "type": "address"
+      }
+    ],
+    "name": "SetFeeManager",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "SetPauseState",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pauser",
+        "type": "address"
+      }
+    ],
+    "name": "SetPauser",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      }
+    ],
+    "name": "SetVoter",
     "type": "event"
   },
   {
@@ -78,28 +137,21 @@
   },
   {
     "inputs": [],
-    "name": "MAX_REFERRAL_FEE",
+    "name": "ZERO_FEE_INDICATOR",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "acceptFeeManager",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "allPairs",
+    "name": "allPools",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "allPairsLength",
+    "name": "allPoolsLength",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -110,17 +162,30 @@
       { "internalType": "address", "name": "tokenB", "type": "address" },
       { "internalType": "bool", "name": "stable", "type": "bool" }
     ],
-    "name": "createPair",
+    "name": "createPool",
     "outputs": [
-      { "internalType": "address", "name": "pair", "type": "address" }
+      { "internalType": "address", "name": "pool", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "dibs",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      { "internalType": "address", "name": "tokenA", "type": "address" },
+      { "internalType": "address", "name": "tokenB", "type": "address" },
+      { "internalType": "uint24", "name": "fee", "type": "uint24" }
+    ],
+    "name": "createPool",
+    "outputs": [
+      { "internalType": "address", "name": "pool", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "customFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -132,45 +197,41 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bool", "name": "_stable", "type": "bool" }],
+    "inputs": [
+      { "internalType": "address", "name": "pool", "type": "address" },
+      { "internalType": "bool", "name": "_stable", "type": "bool" }
+    ],
     "name": "getFee",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getInitializable",
-    "outputs": [
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "bool", "name": "", "type": "bool" }
+    "inputs": [
+      { "internalType": "address", "name": "tokenA", "type": "address" },
+      { "internalType": "address", "name": "tokenB", "type": "address" },
+      { "internalType": "uint24", "name": "fee", "type": "uint24" }
     ],
+    "name": "getPool",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "bool", "name": "", "type": "bool" }
+      { "internalType": "address", "name": "tokenA", "type": "address" },
+      { "internalType": "address", "name": "tokenB", "type": "address" },
+      { "internalType": "bool", "name": "stable", "type": "bool" }
     ],
-    "name": "getPair",
+    "name": "getPool",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "isPair",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "name": "implementation",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -182,47 +243,27 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pairCodeHash",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pairs",
-    "outputs": [
-      { "internalType": "address[]", "name": "", "type": "address[]" }
+    "inputs": [
+      { "internalType": "address", "name": "pool", "type": "address" }
     ],
+    "name": "isPool",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "pendingFeeManager",
+    "name": "pauser",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_dibs", "type": "address" }
+      { "internalType": "address", "name": "pool", "type": "address" },
+      { "internalType": "uint256", "name": "fee", "type": "uint256" }
     ],
-    "name": "setDibs",
+    "name": "setCustomFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -248,34 +289,25 @@
   },
   {
     "inputs": [{ "internalType": "bool", "name": "_state", "type": "bool" }],
-    "name": "setPause",
+    "name": "setPauseState",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_refFee", "type": "uint256" }
+      { "internalType": "address", "name": "_pauser", "type": "address" }
     ],
-    "name": "setReferralFee",
+    "name": "setPauser",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_feehandler", "type": "address" }
+      { "internalType": "address", "name": "_voter", "type": "address" }
     ],
-    "name": "setStakingFeeAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "_newFee", "type": "uint256" }
-    ],
-    "name": "setStakingFees",
+    "name": "setVoter",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -289,31 +321,15 @@
   },
   {
     "inputs": [],
-    "name": "stakingFeeHandler",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stakingNFTFee",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "volatileFee",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voter",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   }

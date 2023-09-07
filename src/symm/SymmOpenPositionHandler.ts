@@ -3,7 +3,7 @@ import { OpenPosition } from "../../generated/SymmDataSource/v3"
 
 import { EPOCH_START_TIMESTAMP } from "../../config/config"
 import { DailyGeneratedVolume } from "../../generated/schema"
-import { zero_address } from "../solidly/utils"
+import { zero_address } from "../aero/utils"
 
 export class OpenPositionHandler {
   user: Address

@@ -1,17 +1,16 @@
 import { BigInt } from "@graphprotocol/graph-ts"
+import { Swap, Sync } from "../../generated/templates/PoolReader/Pool"
+import { AeroHandler } from "./AeroHandler"
+import { updatePath } from "./pools"
 import { Pair } from "../../generated/schema"
-import { Swap, Sync } from "../../generated/templates/PairReader/Pair"
-
-import { SwapHandler } from "./SolidlySwapHandler"
-import { updatePath } from "./pairs"
 
 export function handleSwap(event: Swap): void {
-  const handler = new SwapHandler(event)
+  const handler = new AeroHandler(event)
   handler.handle()
 }
 
 export function handleSync(event: Sync): void {
-  const pair = Pair.load(event.address.toHex())!
+  const pair: Pair = Pair.load(event.address.toHex())!
   const oldReserve0 = pair.reserve0
   const oldReserve1 = pair.reserve1
   const reserve0 = event.params.reserve0

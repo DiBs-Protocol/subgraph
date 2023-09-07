@@ -1,6 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
-import { PairCreated } from "../../generated/PairFactoryDataSource/PairFactory"
-import { Pair as ThePair } from "../../generated/PairFactoryDataSource/Pair"
+import { PoolCreated } from "../../generated/PoolFactoryDataSource/PoolFactory"
+import { Pool } from "../../generated/PoolFactoryDataSource/Pool"
 
 import {
   AllPair,
@@ -10,7 +10,7 @@ import {
   TokenToPair
 } from "../../generated/schema"
 
-import { PairReader } from "../../generated/templates"
+import { PoolReader } from "../../generated/templates"
 import { WETH } from "../../config/config"
 
 const TOKEN_DATA_ID = "TOKEN_DATA"
@@ -168,9 +168,9 @@ function calculatePathToTarget(token: Address, target: Address): void {
   }
 }
 
-export function handlePairCreated(event: PairCreated): void {
+export function handlePairCreated(event: PoolCreated): void {
   // get the pair address
-  const pairAddress = event.params.pair
+  const pairAddress = event.params.pool
   // get the token0 address
   const token0Address = event.params.token0
   // get the token1 address
@@ -179,7 +179,7 @@ export function handlePairCreated(event: PairCreated): void {
   // create an edge and add it to the tree
   // the edge will be from token0 to token1 and the pair address will be the edge id
   const pair = new Pair(pairAddress.toHex())
-  const reservers = ThePair.bind(pairAddress).getReserves()
+  const reservers = Pool.bind(pairAddress).getReserves()
   pair.token0 = token0Address
   pair.token1 = token1Address
   pair.reserve0 = reservers.value0
@@ -199,7 +199,7 @@ export function handlePairCreated(event: PairCreated): void {
   updatePath()
 
   allPair.pairs.forEach(pairId => {
-    PairReader.create(Address.fromString(pairId))
+    PoolReader.create(Address.fromString(pairId))
   })
 }
 

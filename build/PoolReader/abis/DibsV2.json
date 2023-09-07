@@ -1,32 +1,22 @@
 [
   {
     "inputs": [],
-    "name": "AlreadyClaimed",
+    "name": "BalanceTooLow",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LotteryRoundAlreadyOver",
+    "name": "CodeAlreadyExists",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LotteryRoundNotOver",
+    "name": "CodeDoesNotExist",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "NotMuonInterface",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotWinner",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TooManyWinners",
     "type": "error"
   },
   {
@@ -39,49 +29,43 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint32",
-        "name": "_round",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_winner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "_rewardTokens",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "_rewardAmounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "ClaimReward",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "uint8",
         "name": "version",
         "type": "uint8"
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "_code",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_parent",
+        "type": "address"
+      }
+    ],
+    "name": "Register",
     "type": "event"
   },
   {
@@ -164,25 +148,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint32",
-        "name": "_round",
-        "type": "uint32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "_winners",
-        "type": "address[]"
-      }
-    ],
-    "name": "RoundWinner",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "_old",
         "type": "address"
@@ -202,18 +167,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256[]",
+        "internalType": "address",
         "name": "_old",
-        "type": "uint256[]"
+        "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "uint256[]",
+        "internalType": "address",
         "name": "_new",
-        "type": "uint256[]"
+        "type": "address"
       }
     ],
-    "name": "SetRewardAmount",
+    "name": "SetPairRewarderFactory",
     "type": "event"
   },
   {
@@ -221,42 +186,49 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address[]",
-        "name": "_old",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "address[]",
-        "name": "_new",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_parent",
+        "type": "address"
       }
     ],
-    "name": "SetRewardToken",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "_old",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "_new",
-        "type": "uint8"
-      }
-    ],
-    "name": "SetWinnersPerRound",
+    "name": "SetParent",
     "type": "event"
   },
   {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DIBS",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PROJECT_ID",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -283,19 +255,58 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "roundId",
-        "type": "uint32"
-      },
-      {
         "internalType": "address",
-        "name": "to",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "claimReward",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "addressToCode",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "codeToAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "codeToName",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -312,13 +323,57 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getActiveLotteryRound",
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getAddress",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "address",
         "name": "",
-        "type": "uint32"
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getCode",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getCodeName",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -388,32 +443,108 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "_firstRoundStartTime",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_roundDuration",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_winnersPerRound",
-        "type": "uint8"
-      },
-      {
         "internalType": "address",
-        "name": "_admin",
+        "name": "admin_",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_setter",
+        "name": "setter_",
         "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "firstRoundStartTime_",
+        "type": "uint32"
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "muonInterface",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pairRewarderFactory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "parents",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "recoverERC20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "parentCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "register",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -457,124 +588,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "rewardAmounts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "rewardTokens",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "roundClaimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "roundDuration",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "roundToWinners",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "name": "roundWinnersCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_muonInterface",
         "type": "address"
@@ -588,12 +601,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "_rewardAmount",
-        "type": "uint256[]"
+        "internalType": "address",
+        "name": "_pairRewarderFactory",
+        "type": "address"
       }
     ],
-    "name": "setRewardAmount",
+    "name": "setPairRewarderFactory",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -601,43 +614,17 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "_rewardToken",
-        "type": "address[]"
-      }
-    ],
-    "name": "setRewardTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint32",
-        "name": "roundId",
-        "type": "uint32"
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "winners",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "parent",
+        "type": "address"
       }
     ],
-    "name": "setRoundWinners",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "_winnersPerRound",
-        "type": "uint8"
-      }
-    ],
-    "name": "setWinnersPerRound",
+    "name": "setParent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -656,19 +643,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "winnersPerRound",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",

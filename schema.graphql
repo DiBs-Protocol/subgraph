@@ -25,8 +25,8 @@ type SwapLog @entity {
   user: Bytes!
   tokenIn: Bytes!
   amountIn: BigInt!
-  volumeInBNB: BigInt!
-  BNBPrice: BigInt!
+  volumeInEth: BigInt!
+  EthPrice: BigInt!
   volumeInDollars: BigInt!
   stable: Boolean!
   timestamp: BigInt!

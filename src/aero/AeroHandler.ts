@@ -1,18 +1,17 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
-import { PairFactory } from "../../generated/templates/PairReader/PairFactory"
-import { ERC20 } from "../../generated/templates/PairReader/ERC20"
-import { Swap } from "../../generated/templates/PairReader/Pair"
+import { PoolFactory } from "../../generated/templates/PoolReader/PoolFactory"
+import { ERC20 } from "../../generated/templates/PoolReader/ERC20"
+import { Pool, Swap } from "../../generated/templates/PoolReader/Pool"
 
 import { zero_address, createReferral, updateVolume, VolumeType } from "./utils"
-import { Pair } from "../../generated/templates/PairReader/Pair"
 import {
   PathToTarget,
   TotalVolumeTracker,
   DailyVolumeTracker,
   SwapLog
 } from "../../generated/schema"
-import { EACAggregatorProxy } from "../../generated/templates/PairReader/EACAggregatorProxy"
-import { Dibs } from "../../generated/templates/PairReader/Dibs"
+import { EACAggregatorProxy } from "../../generated/templates/PoolReader/EACAggregatorProxy"
+import { DibsV2 } from "../../generated/templates/PoolReader/DibsV2"
 import {
   DIBS,
   DIBS_START_BLOCK,
@@ -21,11 +20,11 @@ import {
   WETH_PRICE_FEED
 } from "../../config/config"
 
-export class SwapHandler {
+export class AeroHandler {
   event: Swap
-  pair: Pair
-  pairFactory: PairFactory
-  dibs: Dibs
+  pool: Pool
+  pairFactory: PoolFactory
+  dibs: DibsV2
   priceFeed: EACAggregatorProxy
   token0: Address
   amountIn0: BigInt
@@ -39,17 +38,17 @@ export class SwapHandler {
 
   constructor(event: Swap) {
     const dibs = getDibs()
-    const pair = Pair.bind(event.address)
+    const pool = Pool.bind(event.address)
 
     const user = event.transaction.from
 
     this.event = event
-    this.pair = pair
+    this.pool = pool
     this.dibs = dibs
     this.priceFeed = getWethPriceFeed()
     this.pairFactory = getFactory()
-    this.token0 = pair.token0()
-    this.token1 = pair.token1()
+    this.token0 = pool.token0()
+    this.token1 = pool.token1()
     this.amountIn0 = event.params.amount0In
     this.amountIn1 = event.params.amount1In
 
@@ -116,7 +115,7 @@ export class SwapHandler {
       this.user,
       token,
       amountIn,
-      this.pair.stable(),
+      this.pool.stable(),
       volumeInWeth,
       this.priceFeed.latestAnswer(),
       volumeInDollars
@@ -147,7 +146,7 @@ export class SwapHandler {
         let _token = token
 
         for (let i = 0; i < pathToWeth.path.length; i++) {
-          const _pair = Pair.bind(Address.fromBytes(pathToWeth.path[i]))
+          const _pair = Pool.bind(Address.fromBytes(pathToWeth.path[i]))
           _unit = _pair.getAmountOut(_unit, _token)
           _token = token == _pair.token0() ? _pair.token1() : _pair.token0()
         }
@@ -235,21 +234,21 @@ export class SwapHandler {
       this.user,
       volumeInDollars,
       this.timestamp,
-      this.pair._address,
+      this.pool._address,
       VolumeType.USER
     )
     updateVolume(
       this.parent,
       volumeInDollars,
       this.timestamp,
-      this.pair._address,
+      this.pool._address,
       VolumeType.PARENT
     )
     updateVolume(
       this.grandParent,
       volumeInDollars,
       this.timestamp,
-      this.pair._address,
+      this.pool._address,
       VolumeType.GRANDPARENT
     )
   }
@@ -264,12 +263,12 @@ function getWethPriceFeed(): EACAggregatorProxy {
   return EACAggregatorProxy.bind(Address.fromString(WETH_PRICE_FEED))
 }
 
-function getDibs(): Dibs {
-  return Dibs.bind(Address.fromString(DIBS))
+function getDibs(): DibsV2 {
+  return DibsV2.bind(Address.fromString(DIBS))
 }
 
-function getFactory(): PairFactory {
-  return PairFactory.bind(Address.fromString(FACTORY))
+function getFactory(): PoolFactory {
+  return PoolFactory.bind(Address.fromString(FACTORY))
 }
 
 function createSwapLog(
@@ -278,8 +277,8 @@ function createSwapLog(
   token: Address,
   amount: BigInt,
   isStable: boolean,
-  volumeInBNB: BigInt,
-  BNBPrice: BigInt,
+  volumeInEth: BigInt,
+  EthPrice: BigInt,
   volumeInDollars: BigInt
 ): void {
   // log the swap itself
@@ -295,15 +294,10 @@ function createSwapLog(
   swap.user = user
   swap.tokenIn = token
   swap.amountIn = amount
-  swap.volumeInBNB = volumeInBNB
-  swap.BNBPrice = BNBPrice
+  swap.volumeInEth = volumeInEth
+  swap.EthPrice = EthPrice
   swap.volumeInDollars = volumeInDollars
   swap.stable = isStable
   swap.timestamp = event.block.timestamp
   swap.save()
-}
-
-function e18(amount: BigInt): BigInt {
-  const E18 = BigInt.fromI32(10).pow(18)
-  return amount.times(E18)
 }
