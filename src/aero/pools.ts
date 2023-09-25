@@ -168,7 +168,7 @@ function calculatePathToTarget(token: Address, target: Address): void {
   }
 }
 
-export function handlePairCreated(event: PoolCreated): void {
+export function handlePoolCreated(event: PoolCreated): void {
   // get the pair address
   const pairAddress = event.params.pool
   // get the token0 address
