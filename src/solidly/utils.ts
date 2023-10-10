@@ -6,18 +6,13 @@ import {
   DailyGeneratedVolume
 } from "../../generated/schema"
 
-import { EPOCH_START_TIMESTAMP, EPOCH_DURATION } from "../../config/config"
+import { EPOCH_START_TIMESTAMP } from "../../config/config"
 
 const epochStartTimeStamp = BigInt.fromI32(EPOCH_START_TIMESTAMP)
-const epochDuration = BigInt.fromI32(EPOCH_DURATION)
 
 export const zero_address = Address.fromHexString(
   "0x0000000000000000000000000000000000000000"
 )
-
-export function getEpoch(timestamp: BigInt): BigInt {
-  return timestamp.minus(epochStartTimeStamp).div(epochDuration)
-}
 
 export function getDay(timestamp: BigInt): BigInt {
   return timestamp.minus(epochStartTimeStamp).div(BigInt.fromI32(86400))
@@ -44,23 +39,6 @@ export function getOrCreateGeneratedVolume(
     generatedVolume.pair = pair
   }
   return generatedVolume as GeneratedVolume
-}
-
-export function getOrCreateAccumulativeGeneratedVolume(
-  user: Address,
-  timestamp: BigInt
-): AccumulativeGeneratedVolume {
-  let id = user.toHex() + "-" + timestamp.toString()
-  let accumulativeGeneratedVolume = AccumulativeGeneratedVolume.load(id)
-  if (accumulativeGeneratedVolume == null) {
-    accumulativeGeneratedVolume = new AccumulativeGeneratedVolume(id)
-    accumulativeGeneratedVolume.user = user
-    accumulativeGeneratedVolume.amountAsUser = BigInt.fromI32(0)
-    accumulativeGeneratedVolume.amountAsReferrer = BigInt.fromI32(0)
-    accumulativeGeneratedVolume.amountAsGrandparent = BigInt.fromI32(0)
-    accumulativeGeneratedVolume.lastUpdate = timestamp
-  }
-  return accumulativeGeneratedVolume as AccumulativeGeneratedVolume
 }
 
 export function getOrCreateEpochGeneratedVolume(
@@ -99,63 +77,6 @@ export function getOrCreateDailyGeneratedVolume(
     dailyGeneratedVolume.day = day
   }
   return dailyGeneratedVolume
-}
-export function updateVolume(
-  user: Address,
-  amount: BigInt,
-  timestamp: BigInt,
-  pair: Address,
-  volumeType: VolumeType
-): void {
-  const generatedVolume = getOrCreateGeneratedVolume(user, pair)
-  const accWeeklyGeneratedVolume = getOrCreateEpochGeneratedVolume(
-    user,
-    getEpoch(timestamp),
-    pair
-  )
-  const accDailyGeneratedVolume = getOrCreateDailyGeneratedVolume(
-    user,
-    getDay(timestamp),
-    pair
-  )
-  if (volumeType == VolumeType.USER) {
-    generatedVolume.amountAsUser = generatedVolume.amountAsUser.plus(amount)
-    accWeeklyGeneratedVolume.amountAsUser = accWeeklyGeneratedVolume.amountAsUser.plus(
-      amount
-    )
-    accDailyGeneratedVolume.amountAsUser = accDailyGeneratedVolume.amountAsUser.plus(
-      amount
-    )
-  } else if (volumeType == VolumeType.PARENT) {
-    generatedVolume.amountAsReferrer = generatedVolume.amountAsReferrer.plus(
-      amount
-    )
-    accWeeklyGeneratedVolume.amountAsReferrer = accWeeklyGeneratedVolume.amountAsReferrer.plus(
-      amount
-    )
-    accDailyGeneratedVolume.amountAsReferrer = accDailyGeneratedVolume.amountAsReferrer.plus(
-      amount
-    )
-  } else if (volumeType == VolumeType.GRANDPARENT) {
-    generatedVolume.amountAsGrandparent = generatedVolume.amountAsGrandparent.plus(
-      amount
-    )
-    accWeeklyGeneratedVolume.amountAsGrandparent = accWeeklyGeneratedVolume.amountAsGrandparent.plus(
-      amount
-    )
-    accDailyGeneratedVolume.amountAsGrandparent = accDailyGeneratedVolume.amountAsGrandparent.plus(
-      amount
-    )
-  }
-
-  // update timestamps
-  accWeeklyGeneratedVolume.lastUpdate = timestamp
-  generatedVolume.lastUpdate = timestamp
-  accDailyGeneratedVolume.lastUpdate = timestamp
-
-  generatedVolume.save()
-  accWeeklyGeneratedVolume.save()
-  accDailyGeneratedVolume.save()
 }
 
 export function createReferral(referrer: Address, user: Address): void {

@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: SymmDataSource
-    network: fantom
+    network: base
     source:
-      address: "0x762407bEd807184F90F3eDcF2D7Ac9CB9d8901c6"
+      address: "0x52e2230cDb80EDEBDaDafcf24033608C9A636D7D"
       abi: v3
-      startBlock: 57685538
+      startBlock: 4728875
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
