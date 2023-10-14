@@ -18,6 +18,8 @@ dataSources:
       abis:
         - name: v3
           file: SymmDataSource/abis/v3.json
+        - name: MultiAccount
+          file: SymmDataSource/abis/MultiAccount.json
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256,uint8)
           handler: handleOpenPosition

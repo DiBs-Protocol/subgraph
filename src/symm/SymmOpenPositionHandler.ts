@@ -1,9 +1,14 @@
 import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { OpenPosition } from "../../generated/SymmDataSource/v3"
 
-import { EPOCH_START_TIMESTAMP } from "../../config/config"
+import {
+  EPOCH_START_TIMESTAMP,
+  MULTI_ACCOUNT_ADDRESS
+} from "../../config/config"
 import { DailyGeneratedVolume } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
+
+import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 
 export class OpenPositionHandler {
   user: Address
@@ -12,7 +17,10 @@ export class OpenPositionHandler {
   day: BigInt
 
   constructor(event: OpenPosition) {
-    this.user = event.params.partyA
+    const subAccountAddress = event.params.partyA
+    this.user = MultiAccount.bind(
+      Address.fromString(MULTI_ACCOUNT_ADDRESS)
+    ).owners(subAccountAddress)
     this.event = event
     this.timestamp = event.block.timestamp
     this.day = event.block.timestamp
