@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts"
+import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { OpenPosition } from "../../generated/SymmDataSource/v3"
 
 import {
@@ -17,10 +17,12 @@ export class OpenPositionHandler {
   day: BigInt
 
   constructor(event: OpenPosition) {
-    const subAccountAddress = event.params.partyA
-    this.user = MultiAccount.bind(
+    const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS)
-    ).owners(subAccountAddress)
+    )
+
+    const subAccountAddress = event.params.partyA
+    this.user = multiAccount.owner(subAccountAddress)
     this.event = event
     this.timestamp = event.block.timestamp
     this.day = event.block.timestamp
@@ -29,16 +31,17 @@ export class OpenPositionHandler {
   }
 
   public handle(): void {
-    const volumeInDollars = this.event.params.fillAmount.times(
-      this.event.params.openedPrice
-    )
-
+    const volumeInDollars = this.getVolume()
     this.updateVolume(this.user, this.day, volumeInDollars) // user volume tracker
     this.updateVolume(
       Address.fromBytes(zero_address),
       this.day,
       volumeInDollars
     ) // total volume tracker
+  }
+
+  public getVolume(): BigInt {
+    return this.event.params.fillAmount.times(this.event.params.openedPrice)
   }
 
   public updateVolume(user: Address, day: BigInt, amount: BigInt): void {
