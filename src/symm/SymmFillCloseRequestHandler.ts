@@ -1,19 +1,20 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { OpenPosition } from "../../generated/SymmDataSource/v3"
+import { FillCloseRequest } from "../../generated/SymmDataSource/v3"
 
 import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "../../config/config"
+import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { updateVolume } from "./utils"
 
-export class OpenPositionHandler {
+export class FillCloseRequestHandler {
   user: Address
-  event: OpenPosition
+  event: FillCloseRequest
   timestamp: BigInt
   day: BigInt
 
-  constructor(event: OpenPosition) {
+  constructor(event: FillCloseRequest) {
     const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS)
     )
@@ -35,10 +36,19 @@ export class OpenPositionHandler {
       this.day,
       volumeInDollars, this.timestamp
     ) // total volume tracker
+
+    const fillAmount = this.event.params.fillAmount
+    let quote = Quote.load(this.event.params.quoteId.toString())!
+    quote.avgClosedPrice = quote.avgClosedPrice
+      .times(quote.closedAmount)
+      .plus(fillAmount.times(this.event.params.closedPrice))
+      .div(quote.closedAmount.plus(fillAmount))
+    quote.closedAmount = quote.closedAmount.plus(fillAmount)
+    quote.save()
   }
 
   public getVolume(): BigInt {
-    return this.event.params.fillAmount.times(this.event.params.openedPrice)
+    return this.event.params.fillAmount.times(this.event.params.closedPrice)
       .div(BigInt.fromString("10").pow(18))
   }
 }

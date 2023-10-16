@@ -1,19 +1,20 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { OpenPosition } from "../../generated/SymmDataSource/v3"
+import { LiquidatePositionsPartyA, v3 } from "../../generated/SymmDataSource/v3"
 
 import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "../../config/config"
+import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { updateVolume } from "./utils"
 
-export class OpenPositionHandler {
+export class LiquidatePositionsPartyAHandler {
   user: Address
-  event: OpenPosition
+  event: LiquidatePositionsPartyA
   timestamp: BigInt
   day: BigInt
 
-  constructor(event: OpenPosition) {
+  constructor(event: LiquidatePositionsPartyA) {
     const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS)
     )
@@ -27,8 +28,8 @@ export class OpenPositionHandler {
       .div(BigInt.fromI32(86400))
   }
 
-  public handle(): void {
-    const volumeInDollars = this.getVolume()
+  public handle(quoteId: BigInt): void {
+    const volumeInDollars = this.getVolume(quoteId)
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
       Address.fromBytes(zero_address),
@@ -37,8 +38,25 @@ export class OpenPositionHandler {
     ) // total volume tracker
   }
 
-  public getVolume(): BigInt {
-    return this.event.params.fillAmount.times(this.event.params.openedPrice)
+  public getVolume(quoteId: BigInt): BigInt {
+    const quote = Quote.load(quoteId.toString())!
+    let symmioContract = v3.bind(this.event.address)
+
+    const callResult = symmioContract.try_getQuote(quoteId)
+    if (callResult.reverted)
+      return BigInt.zero() //FIXME
+    let chainQuote = callResult.value
+    const liquidAmount = quote.quantity.minus(quote.closedAmount)
+    const liquidPrice = chainQuote.avgClosedPrice
+      .times(quote.quantity)
+      .minus(
+        quote.avgClosedPrice
+          .times(quote.closedAmount)
+      )
+      .div(liquidAmount)
+    return liquidAmount
+      .times(liquidPrice)
+      .times(BigInt.fromI32(4))
       .div(BigInt.fromString("10").pow(18))
   }
 }

@@ -100,3 +100,13 @@ type PathToTarget @entity {
   target: Bytes!
   path: [Bytes!]! # path of pairs
 }
+
+
+type Quote @entity {
+  id: ID!
+  account: Bytes!
+  quantity: BigInt!
+  closedAmount: BigInt!
+  avgClosedPrice: BigInt!
+  transaction: Bytes!
+}
