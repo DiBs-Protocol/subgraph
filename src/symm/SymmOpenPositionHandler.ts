@@ -6,6 +6,7 @@ import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { updateVolume } from "./utils"
+import { Quote } from "../../generated/schema"
 
 export class OpenPositionHandler {
   user: Address
@@ -35,6 +36,12 @@ export class OpenPositionHandler {
       this.day,
       volumeInDollars, this.timestamp
     ) // total volume tracker
+
+    let quote = Quote.load(this.event.params.quoteId.toString())
+    if (quote == null)
+      return // FIXME: should not happen !
+    quote.quantity = this.event.params.fillAmount
+    quote.save()
   }
 
   public getVolume(): BigInt {

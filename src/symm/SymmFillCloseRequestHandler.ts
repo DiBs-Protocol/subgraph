@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt, log } from "@graphprotocol/graph-ts"
 import { FillCloseRequest } from "../../generated/SymmDataSource/v3"
 
 import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "../../config/config"
@@ -37,13 +37,14 @@ export class FillCloseRequestHandler {
       volumeInDollars, this.timestamp
     ) // total volume tracker
 
-    const fillAmount = this.event.params.fillAmount
-    let quote = Quote.load(this.event.params.quoteId.toString())!
+    let quote = Quote.load(this.event.params.quoteId.toString())
+    if (quote == null)
+      return // FIXME: should not happen !
     quote.avgClosedPrice = quote.avgClosedPrice
       .times(quote.closedAmount)
-      .plus(fillAmount.times(this.event.params.closedPrice))
-      .div(quote.closedAmount.plus(fillAmount))
-    quote.closedAmount = quote.closedAmount.plus(fillAmount)
+      .plus(this.event.params.fillAmount.times(this.event.params.closedPrice))
+      .div(quote.closedAmount.plus(this.event.params.fillAmount))
+    quote.closedAmount = quote.closedAmount.plus(this.event.params.fillAmount)
     quote.save()
   }
 
