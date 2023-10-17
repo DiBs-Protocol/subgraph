@@ -23,4 +23,12 @@ dataSources:
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256,uint8)
           handler: handleOpenPosition
+        - event: SendQuote(address,uint256,address[],uint256,uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8)
+          handler: handleSendQuote
+        - event: FillCloseRequest(uint256,address,address,uint256,uint256,uint8)
+          handler: handleFillCloseRequest
+        - event: LiquidatePositionsPartyA(address,address,uint256[])
+          handler: handleLiquidatePositionsPartyA
+        - event: LiquidatePositionsPartyB(address,address,address,uint256[])
+          handler: handleLiquidatePositionsPartyB
       file: SymmDataSource/SymmDataSource.wasm
