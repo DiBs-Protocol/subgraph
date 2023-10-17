@@ -56,7 +56,7 @@ export class LiquidatePositionsPartyAHandler {
       .div(liquidAmount)
     return liquidAmount
       .times(liquidPrice)
-      .times(BigInt.fromI32(1))
+      .times(BigInt.fromI32(4))
       .div(BigInt.fromString("10").pow(18))
   }
 }
