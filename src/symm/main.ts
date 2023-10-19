@@ -8,9 +8,8 @@ import {
 import { OpenPositionHandler } from "./SymmOpenPositionHandler"
 import { Quote } from "../../generated/schema"
 import { BigInt } from "@graphprotocol/graph-ts"
-import { FillCloseRequestHandler } from "./SymmFillCloseRequestHandler"
-import { LiquidatePositionsPartyAHandler } from "./SymmLiquidatePositionsPartyAHandler"
-import { LiquidatePositionsPartyBHandler } from "./SymmLiquidatePositionsPartyBHandler"
+import { CloseRequestHandler } from "./SymmCloseRequestHandler"
+import { LiquidatePositionsHandler } from "./SymmLiquidatePositionsHandler"
 
 export function handleOpenPosition(event: OpenPosition): void {
   const handler = new OpenPositionHandler(event)
@@ -28,24 +27,20 @@ export function handleSendQuote(event: SendQuote): void {
 }
 
 export function handleFillCloseRequest(event: FillCloseRequest): void {
-  const handler = new FillCloseRequestHandler(event)
+  const handler = new CloseRequestHandler(event)
   handler.handle()
 }
 
 export function handleLiquidatePositionsPartyA(
   event: LiquidatePositionsPartyA
 ): void {
-  const handler = new LiquidatePositionsPartyAHandler(event)
-  for (let i = 0; i < event.params.quoteIds.length; i++) {
-    handler.handle(event.params.quoteIds[i])
-  }
+  const handler = new LiquidatePositionsHandler(event)
+  handler.handle()
 }
 
 export function handleLiquidatePositionsPartyB(
   event: LiquidatePositionsPartyB
 ): void {
-  const handler = new LiquidatePositionsPartyBHandler(event)
-  for (let i = 0; i < event.params.quoteIds.length; i++) {
-    handler.handle(event.params.quoteIds[i])
-  }
+  const handler = new LiquidatePositionsHandler(event)
+  handler.handle()
 }

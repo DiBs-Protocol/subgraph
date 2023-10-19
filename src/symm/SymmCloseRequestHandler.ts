@@ -1,20 +1,21 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts"
+import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts"
 import { FillCloseRequest } from "../../generated/SymmDataSource/v3"
 
-import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "../../config/config"
+import { MULTI_ACCOUNT_ADDRESS } from "../../config/config"
 import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { updateVolume } from "./utils"
+import { Handler } from "./Handler"
 
-export class FillCloseRequestHandler {
+export class CloseRequestHandler extends Handler {
   user: Address
   event: FillCloseRequest
-  timestamp: BigInt
-  day: BigInt
 
-  constructor(event: FillCloseRequest) {
+  constructor(_event: ethereum.Event) {
+    super(_event)
+    const event = changetype<FillCloseRequest>(_event) // FillClose, ForceClose, EmergencyClose all have the same event signature
     const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS)
     )
@@ -23,23 +24,26 @@ export class FillCloseRequestHandler {
     this.user = multiAccount.owner(subAccountAddress)
     this.event = event
     this.timestamp = event.block.timestamp
-    this.day = event.block.timestamp
-      .minus(BigInt.fromI32(EPOCH_START_TIMESTAMP))
-      .div(BigInt.fromI32(86400))
   }
 
   public handle(): void {
+    if (!this.isValid) return
+
+    this._handle()
+  }
+
+  private _handle(): void {
     const volumeInDollars = this.getVolume()
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
       Address.fromBytes(zero_address),
       this.day,
-      volumeInDollars, this.timestamp
+      volumeInDollars,
+      this.timestamp
     ) // total volume tracker
 
     let quote = Quote.load(this.event.params.quoteId.toString())
-    if (quote == null)
-      return // FIXME: should not happen !
+    if (quote == null) return // FIXME: should not happen !
     quote.avgClosedPrice = quote.avgClosedPrice
       .times(quote.closedAmount)
       .plus(this.event.params.fillAmount.times(this.event.params.closedPrice))
@@ -49,7 +53,8 @@ export class FillCloseRequestHandler {
   }
 
   public getVolume(): BigInt {
-    return this.event.params.fillAmount.times(this.event.params.closedPrice)
+    return this.event.params.fillAmount
+      .times(this.event.params.closedPrice)
       .div(BigInt.fromString("10").pow(18))
   }
 }

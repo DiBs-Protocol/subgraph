@@ -1,5 +1,9 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { LiquidatePositionsPartyA, v3 } from "../../generated/SymmDataSource/v3"
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
+import {
+  LiquidatePositionsPartyA,
+  LiquidatePositionsPartyB,
+  v3
+} from "../../generated/SymmDataSource/v3"
 
 import {
   EPOCH_START_TIMESTAMP,
@@ -10,14 +14,15 @@ import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { updateVolume } from "./utils"
+import { Handler } from "./Handler"
 
-export class LiquidatePositionsPartyAHandler {
+export class LiquidatePositionsHandler extends Handler {
   user: Address
   event: LiquidatePositionsPartyA
-  timestamp: BigInt
-  day: BigInt
 
-  constructor(event: LiquidatePositionsPartyA) {
+  constructor(_event: ethereum.Event) {
+    super(_event)
+    const event = changetype<LiquidatePositionsPartyA>(_event) // LiquidatePositionsPartyA, LiquidatePositionsPartyB have the same event signature
     const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS)
     )
@@ -31,7 +36,16 @@ export class LiquidatePositionsPartyAHandler {
       .div(BigInt.fromI32(86400))
   }
 
-  public handle(quoteId: BigInt): void {
+  public handle(): void {
+    if (!this.isValid) return
+
+    const ids = this.event.params.quoteIds
+    for (let i = 0; i < ids.length; i++) {
+      this._handle(ids[i])
+    }
+  }
+
+  private _handle(quoteId: BigInt): void {
     const volumeInDollars = this.getVolume(quoteId)
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
@@ -56,7 +70,7 @@ export class LiquidatePositionsPartyAHandler {
       .div(liquidAmount)
     return liquidAmount
       .times(liquidPrice)
-      .times(BigInt.fromI32(4))
+      .times(BigInt.fromI32(1))
       .div(BigInt.fromString("10").pow(18))
   }
 }
