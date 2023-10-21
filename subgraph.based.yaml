@@ -26,9 +26,13 @@ dataSources:
         - event: SendQuote(address,uint256,address[],uint256,uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8)
           handler: handleSendQuote
         - event: FillCloseRequest(uint256,address,address,uint256,uint256,uint8)
-          handler: handleFillCloseRequest
+          handler: handleCloseRequest
+        - event: EmergencyClosePosition(uint256,address,address,uint256,uint256,uint8)
+          handler: handleCloseRequest
+        - event: ForceClosePosition(uint256,address,address,uint256,uint256,uint8)
+          handler: handleCloseRequest
         - event: LiquidatePositionsPartyA(address,address,uint256[])
-          handler: handleLiquidatePositionsPartyA
+          handler: handleLiquidatePositions
         - event: LiquidatePositionsPartyB(address,address,address,uint256[])
-          handler: handleLiquidatePositionsPartyB
+          handler: handleLiquidatePositions
       file: ./src/symm/main.ts
