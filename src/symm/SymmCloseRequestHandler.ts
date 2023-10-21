@@ -23,7 +23,6 @@ export class CloseRequestHandler extends Handler {
     const subAccountAddress = event.params.partyA
     this.user = multiAccount.owner(subAccountAddress)
     this.event = event
-    this.timestamp = event.block.timestamp
   }
 
   public handle(): void {

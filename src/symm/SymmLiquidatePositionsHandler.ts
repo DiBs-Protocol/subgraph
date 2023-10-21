@@ -30,10 +30,6 @@ export class LiquidatePositionsHandler extends Handler {
     const subAccountAddress = event.params.partyA
     this.user = multiAccount.owner(subAccountAddress)
     this.event = event
-    this.timestamp = event.block.timestamp
-    this.day = event.block.timestamp
-      .minus(BigInt.fromI32(EPOCH_START_TIMESTAMP))
-      .div(BigInt.fromI32(86400))
   }
 
   public handle(): void {
