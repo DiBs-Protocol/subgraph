@@ -2,15 +2,14 @@ import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { OpenPosition } from "../../generated/SymmDataSource/v3"
 
 import {
-  EPOCH_START_TIMESTAMP,
   MULTI_ACCOUNT_ADDRESS
 } from "../../config/config"
 import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
-import { updateVolume } from "./utils"
 import { Quote } from "../../generated/schema"
 import { Handler } from "./Handler"
+import { updateVolume } from "./utils"
 
 export class OpenPositionHandler extends Handler {
   user: Address
@@ -34,6 +33,8 @@ export class OpenPositionHandler extends Handler {
   }
 
   private _handle(): void {
+    if (this.user == zero_address)
+      return
     const volumeInDollars = this.getVolume()
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(

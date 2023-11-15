@@ -1,20 +1,18 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
 import {
   LiquidatePositionsPartyA,
-  LiquidatePositionsPartyB,
   v3
 } from "../../generated/SymmDataSource/v3"
 
 import {
-  EPOCH_START_TIMESTAMP,
   MULTI_ACCOUNT_ADDRESS
 } from "../../config/config"
 import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
 
 import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
-import { updateVolume } from "./utils"
 import { Handler } from "./Handler"
+import { updateVolume } from "./utils"
 
 export class LiquidatePositionsHandler extends Handler {
   user: Address
@@ -42,6 +40,8 @@ export class LiquidatePositionsHandler extends Handler {
   }
 
   private _handle(quoteId: BigInt): void {
+    if (this.user == zero_address)
+      return
     const volumeInDollars = this.getVolume(quoteId)
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
