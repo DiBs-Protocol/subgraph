@@ -97,6 +97,37 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "DelegateAccess",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       },
@@ -483,6 +514,63 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      },
+      {
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "delegateAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "name": "delegatedAccesses",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -700,7 +788,7 @@
         "type": "address"
       }
     ],
-    "name": "owner",
+    "name": "owners",
     "outputs": [
       {
         "internalType": "address",

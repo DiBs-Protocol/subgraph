@@ -21,7 +21,7 @@ export class CloseRequestHandler extends Handler {
     )
 
     const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owner(subAccountAddress)
+    this.user = multiAccount.owners(subAccountAddress)
     this.event = event
   }
 
@@ -47,14 +47,14 @@ export class CloseRequestHandler extends Handler {
     if (quote == null) return // FIXME: should not happen !
     quote.avgClosedPrice = quote.avgClosedPrice
       .times(quote.closedAmount)
-      .plus(this.event.params.fillAmount.times(this.event.params.closedPrice))
-      .div(quote.closedAmount.plus(this.event.params.fillAmount))
-    quote.closedAmount = quote.closedAmount.plus(this.event.params.fillAmount)
+      .plus(this.event.params.filledAmount.times(this.event.params.closedPrice))
+      .div(quote.closedAmount.plus(this.event.params.filledAmount))
+    quote.closedAmount = quote.closedAmount.plus(this.event.params.filledAmount)
     quote.save()
   }
 
   public getVolume(): BigInt {
-    return this.event.params.fillAmount
+    return this.event.params.filledAmount
       .times(this.event.params.closedPrice)
       .div(BigInt.fromString("10").pow(18))
   }

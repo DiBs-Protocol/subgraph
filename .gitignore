@@ -136,3 +136,7 @@ generated
 # mustache genereated files
 subgraph.yaml
 config.ts
+.idea/
+.vscode/
+build/
+cache/

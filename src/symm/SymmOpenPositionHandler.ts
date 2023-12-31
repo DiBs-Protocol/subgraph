@@ -22,7 +22,7 @@ export class OpenPositionHandler extends Handler {
     )
 
     const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owner(subAccountAddress)
+    this.user = multiAccount.owners(subAccountAddress)
     this.event = event
   }
 
@@ -46,12 +46,12 @@ export class OpenPositionHandler extends Handler {
 
     let quote = Quote.load(this.event.params.quoteId.toString())
     if (quote == null) return // FIXME: should not happen !
-    quote.quantity = this.event.params.fillAmount
+    quote.quantity = this.event.params.filledAmount
     quote.save()
   }
 
   public getVolume(): BigInt {
-    return this.event.params.fillAmount
+    return this.event.params.filledAmount
       .times(this.event.params.openedPrice)
       .div(BigInt.fromString("10").pow(18))
   }

@@ -26,7 +26,7 @@ export class LiquidatePositionsHandler extends Handler {
     )
 
     const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owner(subAccountAddress)
+    this.user = multiAccount.owners(subAccountAddress)
     this.event = event
   }
 
