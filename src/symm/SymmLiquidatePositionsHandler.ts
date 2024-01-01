@@ -1,32 +1,18 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import {
-  LiquidatePositionsPartyA,
-  v3
-} from "../../generated/SymmDataSource/v3"
-
-import {
-  MULTI_ACCOUNT_ADDRESS
-} from "../../config/config"
+import { LiquidatePositionsPartyA, v3 } from "../../generated/SymmDataSource/v3"
 import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
-
-import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 
 export class LiquidatePositionsHandler extends Handler {
-  user: Address
   event: LiquidatePositionsPartyA
+  user: Address
 
   constructor(_event: ethereum.Event) {
     super(_event)
     const event = changetype<LiquidatePositionsPartyA>(_event) // LiquidatePositionsPartyA, LiquidatePositionsPartyB have the same event signature
-    const multiAccount = MultiAccount.bind(
-      Address.fromString(MULTI_ACCOUNT_ADDRESS)
-    )
-
-    const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owners(subAccountAddress)
+    this.user = super.getOwner(event.params.partyA)
     this.event = event
   }
 

@@ -1,29 +1,19 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { OpenPosition } from "../../generated/SymmDataSource/v3"
 
-import {
-  MULTI_ACCOUNT_ADDRESS
-} from "../../config/config"
 import { zero_address } from "../solidly/utils"
-
-import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { Quote } from "../../generated/schema"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 
 export class OpenPositionHandler extends Handler {
-  user: Address
   event: OpenPosition
+  user: Address
 
-  constructor(event: OpenPosition) {
-    super(event)
-    const multiAccount = MultiAccount.bind(
-      Address.fromString(MULTI_ACCOUNT_ADDRESS)
-    )
-
-    const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owners(subAccountAddress)
-    this.event = event
+  constructor(_event: OpenPosition) {
+    super(_event)
+    this.user = super.getOwner(_event.params.partyA)
+    this.event = _event
   }
 
   public handle(): void {

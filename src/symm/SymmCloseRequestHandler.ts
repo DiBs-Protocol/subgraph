@@ -1,27 +1,19 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
 import { FillCloseRequest } from "../../generated/SymmDataSource/v3"
 
-import { MULTI_ACCOUNT_ADDRESS } from "../../config/config"
 import { Quote } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
-
-import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 
 export class CloseRequestHandler extends Handler {
-  user: Address
   event: FillCloseRequest
+  user: Address
 
   constructor(_event: ethereum.Event) {
     super(_event)
     const event = changetype<FillCloseRequest>(_event) // FillClose, ForceClose, EmergencyClose all have the same event signature
-    const multiAccount = MultiAccount.bind(
-      Address.fromString(MULTI_ACCOUNT_ADDRESS)
-    )
-
-    const subAccountAddress = event.params.partyA
-    this.user = multiAccount.owners(subAccountAddress)
+    this.user = super.getOwner(event.params.partyA)
     this.event = event
   }
 

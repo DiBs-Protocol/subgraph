@@ -140,3 +140,4 @@ config.ts
 .vscode/
 build/
 cache/
+package-lock.json
