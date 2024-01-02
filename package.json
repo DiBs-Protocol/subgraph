@@ -11,11 +11,11 @@
     "prepare:based": "mustache config/based.json subgraph.based.yaml > subgraph.yaml; mustache config/based.json config/config.symm.ts > config/config.ts"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.35.0",
-    "@graphprotocol/graph-ts": "0.28.1"
+    "@graphprotocol/graph-cli": "0.64.1",
+    "@graphprotocol/graph-ts": "0.32.0"
   },
   "devDependencies": {
-    "mustache": "^3.1.0",
-    "matchstick-as": "0.5.0"
+    "mustache": "^4.2.0",
+    "matchstick-as": "0.6.0"
   }
 }
