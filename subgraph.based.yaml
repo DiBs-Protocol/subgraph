@@ -61,7 +61,7 @@ dataSources:
           file: ./abis/MultiAccount_old.json
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256,uint8)
-          handler: handleOpenPosition
+          handler: handleOpenPositionOld
         - event: SendQuote(address,uint256,address[],uint256,uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8)
           handler: handleSendQuote
         - event: FillCloseRequest(uint256,address,address,uint256,uint256,uint8)
