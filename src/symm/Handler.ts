@@ -36,15 +36,16 @@ export class Handler {
   }
 
   public getOwner(account: Address): Address {
-    if (this._event.address.toHexString() == OLD_SYMMIO_ADDRESS) {
-      const multiAccount = MultiAccount_old.bind(
-        Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
-      )
-      return multiAccount.owner(account)
+    const multiAccount_old = MultiAccount_old.bind(
+      Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
+    )
+    const multiAccount = MultiAccount.bind(
+      Address.fromString(MULTI_ACCOUNT_ADDRESS),
+    )
+
+    if (this._event.address == Address.fromHexString(OLD_SYMMIO_ADDRESS)) {
+      return multiAccount_old.owner(account)
     } else {
-      const multiAccount = MultiAccount.bind(
-        Address.fromString(MULTI_ACCOUNT_ADDRESS),
-      )
       return multiAccount.owners(account)
     }
   }
