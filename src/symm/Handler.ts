@@ -31,21 +31,21 @@ export class Handler {
     throw new Error("Not implemented")
   }
 
+  public getQuoteObjectId(quoteId: BigInt): string {
+    return this._event.address.toHexString() + quoteId.toString()
+  }
+
   public getOwner(account: Address): Address {
-    const multiAccount = MultiAccount.bind(
-      Address.fromString(MULTI_ACCOUNT_ADDRESS),
-    )
-
-    const multiAccountOld = MultiAccount_old.bind(
-      Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
-    )
-
-    let owner = multiAccount.try_owners(account)
-
-    if (owner.reverted) {
-      owner = multiAccountOld.try_owner(account)
+    if (this._event.address.toHexString() == OLD_SYMMIO_ADDRESS) {
+      const multiAccount = MultiAccount_old.bind(
+        Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
+      )
+      return multiAccount.owner(account)
+    } else {
+      const multiAccount = MultiAccount.bind(
+        Address.fromString(MULTI_ACCOUNT_ADDRESS),
+      )
+      return multiAccount.owners(account)
     }
-
-    return owner.value
   }
 }

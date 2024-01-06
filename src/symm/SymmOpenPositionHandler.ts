@@ -23,18 +23,17 @@ export class OpenPositionHandler extends Handler {
   }
 
   private _handle(): void {
-    if (this.user == zero_address)
-      return
+    if (this.user == zero_address) return
     const volumeInDollars = this.getVolume()
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
       Address.fromBytes(zero_address),
       this.day,
       volumeInDollars,
-      this.timestamp
+      this.timestamp,
     ) // total volume tracker
 
-    let quote = Quote.load(this.event.params.quoteId.toString())
+    const quote = Quote.load(this.getQuoteObjectId(this.event.params.quoteId))!
     if (quote == null) return // FIXME: should not happen !
     quote.quantity = this.event.params.filledAmount
     quote.save()

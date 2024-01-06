@@ -53,6 +53,8 @@ dataSources:
       entities:
         - OpenPosition
       abis:
+        - name: MultiAccount
+          file: ./abis/MultiAccount.json
         - name: v3_old
           file: ./abis/v3_old.json
         - name: MultiAccount_old

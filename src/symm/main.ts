@@ -6,7 +6,7 @@ import {
   LiquidatePositionsPartyA,
   LiquidatePositionsPartyB,
   OpenPosition,
-  SendQuote
+  SendQuote,
 } from "../../generated/SymmDataSource/v3"
 import { Quote } from "../../generated/schema"
 import { CloseRequestHandler } from "./SymmCloseRequestHandler"
@@ -19,7 +19,10 @@ export function handleOpenPosition(event: OpenPosition): void {
 }
 
 export function handleSendQuote(event: SendQuote): void {
-  let quote = new Quote(event.params.quoteId.toString())
+  const quote = new Quote(
+    event.address.toHexString() + event.params.quoteId.toString(),
+  )
+  quote.id = event.params.quoteId.toString()
   quote.transaction = event.transaction.hash
   quote.quantity = event.params.quantity
   quote.account = event.params.partyA
@@ -33,7 +36,9 @@ export function handleFillCloseRequest(event: FillCloseRequest): void {
   handler.handle()
 }
 
-export function handleEmergencyCloseRequest(event: EmergencyClosePosition): void {
+export function handleEmergencyCloseRequest(
+  event: EmergencyClosePosition,
+): void {
   const handler = new CloseRequestHandler(event)
   handler.handle()
 }
@@ -43,12 +48,16 @@ export function handleForceCloseRequest(event: ForceClosePosition): void {
   handler.handle()
 }
 
-export function handleLiquidatePositionsPartyA(event: LiquidatePositionsPartyA): void {
+export function handleLiquidatePositionsPartyA(
+  event: LiquidatePositionsPartyA,
+): void {
   const handler = new LiquidatePositionsHandler(event)
   handler.handle()
 }
 
-export function handleLiquidatePositionsPartyB(event: LiquidatePositionsPartyB): void {
+export function handleLiquidatePositionsPartyB(
+  event: LiquidatePositionsPartyB,
+): void {
   const handler = new LiquidatePositionsHandler(event)
   handler.handle()
 }

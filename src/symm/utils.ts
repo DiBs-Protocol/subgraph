@@ -1,8 +1,14 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { DailyGeneratedVolume } from "../../generated/schema"
 import { zero_address } from "../solidly/utils"
+import { SendQuote } from "../../generated/SymmDataSource/v3"
 
-export function updateVolume(user: Address, day: BigInt, amount: BigInt, timestamp: BigInt): void {
+export function updateVolume(
+  user: Address,
+  day: BigInt,
+  amount: BigInt,
+  timestamp: BigInt,
+): void {
   const userVolumeId =
     user.toHex() +
     "-" +

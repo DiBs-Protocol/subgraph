@@ -26,20 +26,19 @@ export class LiquidatePositionsHandler extends Handler {
   }
 
   private _handle(quoteId: BigInt): void {
-    if (this.user == zero_address)
-      return
+    if (this.user == zero_address) return
     const volumeInDollars = this.getVolume(quoteId)
     updateVolume(this.user, this.day, volumeInDollars, this.timestamp) // user volume tracker
     updateVolume(
       Address.fromBytes(zero_address),
       this.day,
       volumeInDollars,
-      this.timestamp
+      this.timestamp,
     ) // total volume tracker
   }
 
   public getVolume(quoteId: BigInt): BigInt {
-    const quote = Quote.load(quoteId.toString())!
+    const quote = Quote.load(this.getQuoteObjectId(quoteId))!
     let symmioContract = v3.bind(this.event.address)
 
     const callResult = symmioContract.try_getQuote(quoteId)
