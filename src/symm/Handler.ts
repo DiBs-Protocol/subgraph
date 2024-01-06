@@ -36,8 +36,16 @@ export class Handler {
       Address.fromString(MULTI_ACCOUNT_ADDRESS),
     )
 
-    const owner = multiAccount.owners(account)
+    const multiAccountOld = MultiAccount_old.bind(
+      Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
+    )
 
-    return owner
+    let owner = multiAccount.try_owners(account)
+
+    if (owner.reverted) {
+      owner = multiAccountOld.try_owner(account)
+    }
+
+    return owner.value
   }
 }
