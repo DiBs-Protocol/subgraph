@@ -34,7 +34,7 @@ export class CloseRequestHandler extends Handler {
       this.timestamp,
     ) // total volume tracker
 
-    const quote = Quote.load(this.getQuoteObjectId(this.event.params.quoteId))!
+    const quote = Quote.load(this.getQuoteObjectId(this.event.params.quoteId))
     if (quote == null) return // FIXME: should not happen !
     quote.avgClosedPrice = quote.avgClosedPrice
       .times(quote.closedAmount)

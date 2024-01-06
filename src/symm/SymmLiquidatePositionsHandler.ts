@@ -38,7 +38,10 @@ export class LiquidatePositionsHandler extends Handler {
   }
 
   public getVolume(quoteId: BigInt): BigInt {
-    const quote = Quote.load(this.getQuoteObjectId(quoteId))!
+    const quote = Quote.load(this.getQuoteObjectId(quoteId))
+
+    if (quote == null) return BigInt.zero() //FIXME
+
     let symmioContract = v3.bind(this.event.address)
 
     const callResult = symmioContract.try_getQuote(quoteId)

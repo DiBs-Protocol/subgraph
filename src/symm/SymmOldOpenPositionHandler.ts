@@ -33,7 +33,7 @@ export class OldOpenPositionHandler extends Handler {
       this.timestamp,
     ) // total volume tracker
 
-    const quote = Quote.load(this.getQuoteObjectId(this.event.params.quoteId))!
+    const quote = Quote.load(this.getQuoteObjectId(this.event.params.quoteId))
     if (quote == null) return // FIXME: should not happen !
     quote.quantity = this.event.params.fillAmount
     quote.save()
