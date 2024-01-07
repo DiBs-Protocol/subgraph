@@ -29,7 +29,6 @@ export function handleSendQuote(event: SendQuote): void {
   const quote = new Quote(
     event.address.toHexString() + event.params.quoteId.toString(),
   )
-  quote.id = event.params.quoteId.toString()
   quote.transaction = event.transaction.hash
   quote.quantity = event.params.quantity
   quote.account = event.params.partyA
