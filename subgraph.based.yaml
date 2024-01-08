@@ -18,6 +18,8 @@ dataSources:
       abis:
         - name: v3
           file: ./abis/v3.json
+        - name: v3_old
+          file: ./abis/v3_old.json
         - name: MultiAccount
           file: ./abis/MultiAccount.json
         - name: MultiAccount_old
@@ -57,6 +59,8 @@ dataSources:
           file: ./abis/MultiAccount.json
         - name: v3_old
           file: ./abis/v3_old.json
+        - name: v3
+          file: ./abis/v3.json
         - name: MultiAccount_old
           file: ./abis/MultiAccount_old.json
       eventHandlers:
