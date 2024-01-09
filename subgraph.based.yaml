@@ -71,7 +71,7 @@ dataSources:
         - event: ForceClosePosition(uint256,address,address,uint256,uint256,uint8)
           handler: handleForceCloseRequest
         - event: LiquidatePositionsPartyA(address,address,uint256[])
-          handler: handleLiquidatePositionsPartyA
+          handler: handleOldLiquidatePositionsPartyA
         - event: LiquidatePositionsPartyB(address,address,address,uint256[])
-          handler: handleLiquidatePositionsPartyB
+          handler: handleOldLiquidatePositionsPartyB
       file: ./src/symm/main.ts
