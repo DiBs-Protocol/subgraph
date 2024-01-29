@@ -1,6 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { DailyGeneratedVolume } from "../generated/schema"
-import { SendQuote } from "../generated/SymmDataSource/v3"
 
 export function updateVolume(
   user: Address,

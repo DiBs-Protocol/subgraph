@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43"
       abi: v3
-      startBlock: 8616095
+      startBlock: 8616141 # multiaccount deployment block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -18,12 +18,8 @@ dataSources:
       abis:
         - name: v3
           file: ./abis/v3.json
-        - name: v3_old
-          file: ./abis/v3_old.json
         - name: MultiAccount
           file: ./abis/MultiAccount.json
-        - name: MultiAccount_old
-          file: ./abis/MultiAccount_old.json
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256)
           handler: handleOpenPosition
@@ -39,43 +35,4 @@ dataSources:
           handler: handleLiquidatePositionsPartyA
         - event: LiquidatePositionsPartyB(address,address,address,uint256[])
           handler: handleLiquidatePositionsPartyB
-      file: ./src/main.ts
-
-  - kind: ethereum/contract
-    name: SymmDataSourceOld
-    network: base
-    source:
-      address: "0x52e2230cDb80EDEBDaDafcf24033608C9A636D7D"
-      abi: v3_old
-      startBlock: 4728875
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - OpenPosition
-      abis:
-        - name: MultiAccount
-          file: ./abis/MultiAccount.json
-        - name: v3_old
-          file: ./abis/v3_old.json
-        - name: v3
-          file: ./abis/v3.json
-        - name: MultiAccount_old
-          file: ./abis/MultiAccount_old.json
-      eventHandlers:
-        - event: OpenPosition(uint256,address,address,uint256,uint256,uint8)
-          handler: handleOpenPositionOld
-        - event: SendQuote(address,uint256,address[],uint256,uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8)
-          handler: handleSendQuote
-        - event: FillCloseRequest(uint256,address,address,uint256,uint256,uint8)
-          handler: handleFillCloseRequest
-        - event: EmergencyClosePosition(uint256,address,address,uint256,uint256,uint8)
-          handler: handleEmergencyCloseRequest
-        - event: ForceClosePosition(uint256,address,address,uint256,uint256,uint8)
-          handler: handleForceCloseRequest
-        - event: LiquidatePositionsPartyA(address,address,uint256[])
-          handler: handleOldLiquidatePositionsPartyA
-        - event: LiquidatePositionsPartyB(address,address,address,uint256[])
-          handler: handleOldLiquidatePositionsPartyB
       file: ./src/main.ts

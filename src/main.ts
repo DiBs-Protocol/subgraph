@@ -8,21 +8,13 @@ import {
   OpenPosition,
   SendQuote,
 } from "../generated/SymmDataSource/v3"
-import { OpenPosition as OldOpenPosition } from "../generated/SymmDataSourceOld/v3_old"
 import { Quote } from "../generated/schema"
 import { CloseRequestHandler } from "./SymmCloseRequestHandler"
 import { LiquidatePositionsHandler } from "./SymmLiquidatePositionsHandler"
-import { OldLiquidatePositionsHandler } from "./SymmOldLiquidatePositionsHandler"
-import { OldOpenPositionHandler } from "./SymmOldOpenPositionHandler"
 import { OpenPositionHandler } from "./SymmOpenPositionHandler"
 
 export function handleOpenPosition(event: OpenPosition): void {
   const handler = new OpenPositionHandler(event)
-  handler.handle()
-}
-
-export function handleOpenPositionOld(event: OldOpenPosition): void {
-  const handler = new OldOpenPositionHandler(event)
   handler.handle()
 }
 
@@ -62,23 +54,9 @@ export function handleLiquidatePositionsPartyA(
   handler.handle()
 }
 
-export function handleOldLiquidatePositionsPartyA(
-  event: LiquidatePositionsPartyA,
-): void {
-  const handler = new OldLiquidatePositionsHandler(event)
-  handler.handle()
-}
-
 export function handleLiquidatePositionsPartyB(
   event: LiquidatePositionsPartyB,
 ): void {
   const handler = new LiquidatePositionsHandler(event)
-  handler.handle()
-}
-
-export function handleOldLiquidatePositionsPartyB(
-  event: LiquidatePositionsPartyB,
-): void {
-  const handler = new OldLiquidatePositionsHandler(event)
   handler.handle()
 }

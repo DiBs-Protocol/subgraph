@@ -1,11 +1,5 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import {
-  EPOCH_START_TIMESTAMP,
-  MULTI_ACCOUNT_ADDRESS,
-  OLD_MULTI_ACCOUNT_ADDRESS,
-  OLD_SYMMIO_ADDRESS,
-} from "./config"
-import { MultiAccount_old } from "../generated/SymmDataSourceOld/MultiAccount_old"
+import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "./config"
 import { MultiAccount } from "../generated/SymmDataSource/MultiAccount"
 
 export class Handler {
@@ -27,8 +21,6 @@ export class Handler {
 
   public handle(): void {
     if (!this.isValid) return
-
-    throw new Error("Not implemented")
   }
 
   public getQuoteObjectId(quoteId: BigInt): string {
@@ -36,17 +28,9 @@ export class Handler {
   }
 
   public getOwner(account: Address): Address {
-    const multiAccount_old = MultiAccount_old.bind(
-      Address.fromString(OLD_MULTI_ACCOUNT_ADDRESS),
-    )
     const multiAccount = MultiAccount.bind(
       Address.fromString(MULTI_ACCOUNT_ADDRESS),
     )
-
-    if (this._event.address == Address.fromHexString(OLD_SYMMIO_ADDRESS)) {
-      return multiAccount_old.owner(account)
-    } else {
-      return multiAccount.owners(account)
-    }
+    return multiAccount.owners(account)
   }
 }
