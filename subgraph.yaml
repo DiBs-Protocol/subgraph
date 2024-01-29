@@ -39,7 +39,7 @@ dataSources:
           handler: handleLiquidatePositionsPartyA
         - event: LiquidatePositionsPartyB(address,address,address,uint256[])
           handler: handleLiquidatePositionsPartyB
-      file: ./src/symm/main.ts
+      file: ./src/main.ts
 
   - kind: ethereum/contract
     name: SymmDataSourceOld
@@ -78,4 +78,4 @@ dataSources:
           handler: handleOldLiquidatePositionsPartyA
         - event: LiquidatePositionsPartyB(address,address,address,uint256[])
           handler: handleOldLiquidatePositionsPartyB
-      file: ./src/symm/main.ts
+      file: ./src/main.ts

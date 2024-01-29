@@ -1,11 +1,11 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import { LiquidatePositionsPartyA, v3_old } from "../../generated/SymmDataSourceOld/v3_old"
-import { Quote } from "../../generated/schema"
-import { zero_address } from "../solidly/utils"
+import { LiquidatePositionsPartyA, v3 } from "../generated/SymmDataSource/v3"
+import { Quote } from "../generated/schema"
+import { zero_address } from "./utils"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 
-export class OldLiquidatePositionsHandler extends Handler {
+export class LiquidatePositionsHandler extends Handler {
   event: LiquidatePositionsPartyA
   user: Address
 
@@ -42,7 +42,7 @@ export class OldLiquidatePositionsHandler extends Handler {
 
     if (quote == null) return BigInt.zero() //FIXME
 
-    let symmioContract = v3_old.bind(this.event.address)
+    let symmioContract = v3.bind(this.event.address)
 
     const callResult = symmioContract.try_getQuote(quoteId)
     if (callResult.reverted) return BigInt.zero() //FIXME

@@ -1,7 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { DailyGeneratedVolume } from "../../generated/schema"
-import { zero_address } from "../solidly/utils"
-import { SendQuote } from "../../generated/SymmDataSource/v3"
+import { DailyGeneratedVolume } from "../generated/schema"
+import { SendQuote } from "../generated/SymmDataSource/v3"
 
 export function updateVolume(
   user: Address,
@@ -37,3 +36,7 @@ export function updateVolume(
   acc.lastUpdate = timestamp
   acc.save()
 }
+
+export const zero_address = Address.fromHexString(
+  "0x0000000000000000000000000000000000000000",
+)

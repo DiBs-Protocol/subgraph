@@ -1,14 +1,10 @@
 {
-  "name": "dibs",
+  "name": "volumeTracker",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "test": "graph test",
-    "prepare:thena": "mustache config/thena.json subgraph.solidly.template.yaml > subgraph.yaml; mustache config/thena.json config/config.template.ts > config/config.ts",
-    "prepare:chronos": "mustache config/chronos.json subgraph.solidly.template.yaml > subgraph.yaml; mustache config/chronos.json config/config.template.ts > config/config.ts",
-    "prepare:ramses": "mustache config/ramses.json subgraph.solidly.template.yaml > subgraph.yaml; mustache config/ramses.json config/config.template.ts > config/config.ts",
-    "prepare:based": "mustache config/based.json subgraph.based.yaml > subgraph.yaml; mustache config/based.json config/config.symm.ts > config/config.ts"
+    "test": "graph test"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.64.1",

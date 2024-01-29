@@ -7,9 +7,9 @@ import {
   LiquidatePositionsPartyB,
   OpenPosition,
   SendQuote,
-} from "../../generated/SymmDataSource/v3"
-import { OpenPosition as OldOpenPosition } from "../../generated/SymmDataSourceOld/v3_old"
-import { Quote } from "../../generated/schema"
+} from "../generated/SymmDataSource/v3"
+import { OpenPosition as OldOpenPosition } from "../generated/SymmDataSourceOld/v3_old"
+import { Quote } from "../generated/schema"
 import { CloseRequestHandler } from "./SymmCloseRequestHandler"
 import { LiquidatePositionsHandler } from "./SymmLiquidatePositionsHandler"
 import { OldLiquidatePositionsHandler } from "./SymmOldLiquidatePositionsHandler"

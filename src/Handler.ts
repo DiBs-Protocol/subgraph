@@ -4,9 +4,9 @@ import {
   MULTI_ACCOUNT_ADDRESS,
   OLD_MULTI_ACCOUNT_ADDRESS,
   OLD_SYMMIO_ADDRESS,
-} from "../../config/config"
-import { MultiAccount_old } from "../../generated/SymmDataSourceOld/MultiAccount_old"
-import { MultiAccount } from "../../generated/SymmDataSource/MultiAccount"
+} from "./config"
+import { MultiAccount_old } from "../generated/SymmDataSourceOld/MultiAccount_old"
+import { MultiAccount } from "../generated/SymmDataSource/MultiAccount"
 
 export class Handler {
   private _event: ethereum.Event

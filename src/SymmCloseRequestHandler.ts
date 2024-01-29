@@ -1,8 +1,7 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import { FillCloseRequest } from "../../generated/SymmDataSource/v3"
-
-import { Quote } from "../../generated/schema"
-import { zero_address } from "../solidly/utils"
+import { FillCloseRequest } from "../generated/SymmDataSource/v3"
+import { zero_address } from "./utils"
+import { Quote } from "../generated/schema"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 

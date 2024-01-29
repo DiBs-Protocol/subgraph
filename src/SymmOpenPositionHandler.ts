@@ -1,8 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { OpenPosition } from "../../generated/SymmDataSource/v3"
-
-import { zero_address } from "../solidly/utils"
-import { Quote } from "../../generated/schema"
+import { OpenPosition } from "../generated/SymmDataSource/v3"
+import { zero_address } from "./utils"
+import { Quote } from "../generated/schema"
 import { Handler } from "./Handler"
 import { updateVolume } from "./utils"
 
