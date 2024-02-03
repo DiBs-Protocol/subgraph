@@ -1,5 +1,15 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { DailyGeneratedVolume } from "../generated/schema"
+import { ReferralNFT } from "../generated/SymmDataSource/ReferralNFT"
+import { REFERRAL_NFT_ADDRESS } from "./config"
+
+function getReferrerNftId(user: Address): BigInt {
+  const referralNft = ReferralNFT.bind(
+    Address.fromHexString(REFERRAL_NFT_ADDRESS),
+  )
+
+  return referralNft.referrer(referralNft.tokenInUse(user))
+}
 
 export function updateVolume(
   user: Address,
@@ -7,31 +17,21 @@ export function updateVolume(
   amount: BigInt,
   timestamp: BigInt,
 ): void {
+  const referrerTokenId = getReferrerNftId(user)
   const userVolumeId =
-    user.toHex() +
-    "-" +
-    day.toString() +
-    "-" +
-    "0x0000000000000000000000000000000000000000"
+    user.toHex() + "-" + referrerTokenId + "-" + day.toString()
 
   let acc = DailyGeneratedVolume.load(userVolumeId)
 
   if (acc == null) {
-    const acc = new DailyGeneratedVolume(userVolumeId)
+    acc = new DailyGeneratedVolume(userVolumeId)
+    acc.referrerNftId = referrerTokenId
     acc.user = user
     acc.day = day
-    acc.amountAsUser = amount
-    acc.amountAsReferrer = amount
-    acc.amountAsGrandparent = amount
-    acc.lastUpdate = timestamp
-    acc.pair = zero_address
-    acc.save()
-    return
+    acc.volume = BigInt.fromI32(0)
   }
 
-  acc.amountAsUser = acc.amountAsUser.plus(amount)
-  acc.amountAsReferrer = acc.amountAsReferrer.plus(amount)
-  acc.amountAsGrandparent = acc.amountAsGrandparent.plus(amount)
+  acc.volume = acc.volume.plus(amount)
   acc.lastUpdate = timestamp
   acc.save()
 }
