@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43"
       abi: v3
-      startBlock: 8616141 # multiaccount deployment block
+      startBlock: 8616141 # must be grater than [multiaccount, referralNFT] deployment block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -20,6 +20,8 @@ dataSources:
           file: ./abis/v3.json
         - name: MultiAccount
           file: ./abis/MultiAccount.json
+        - name: ReferralNFT
+          file: ./abis/ReferralNFT.json
       eventHandlers:
         - event: OpenPosition(uint256,address,address,uint256,uint256)
           handler: handleOpenPosition

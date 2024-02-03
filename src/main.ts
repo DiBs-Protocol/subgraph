@@ -13,11 +13,6 @@ import { CloseRequestHandler } from "./SymmCloseRequestHandler"
 import { LiquidatePositionsHandler } from "./SymmLiquidatePositionsHandler"
 import { OpenPositionHandler } from "./SymmOpenPositionHandler"
 
-export function handleOpenPosition(event: OpenPosition): void {
-  const handler = new OpenPositionHandler(event)
-  handler.handle()
-}
-
 export function handleSendQuote(event: SendQuote): void {
   const quote = new Quote(
     event.address.toHexString() + event.params.quoteId.toString(),
@@ -28,6 +23,11 @@ export function handleSendQuote(event: SendQuote): void {
   quote.closedAmount = BigInt.fromString("0")
   quote.avgClosedPrice = BigInt.fromString("0")
   quote.save()
+}
+
+export function handleOpenPosition(event: OpenPosition): void {
+  const handler = new OpenPositionHandler(event)
+  handler.handle()
 }
 
 export function handleFillCloseRequest(event: FillCloseRequest): void {

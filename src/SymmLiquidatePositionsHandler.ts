@@ -52,9 +52,6 @@ export class LiquidatePositionsHandler extends Handler {
       .times(quote.quantity)
       .minus(quote.avgClosedPrice.times(quote.closedAmount))
       .div(liquidAmount)
-    return liquidAmount
-      .times(liquidPrice)
-      .times(BigInt.fromI32(4))
-      .div(BigInt.fromString("10").pow(18))
+    return liquidAmount.times(liquidPrice).div(BigInt.fromString("10").pow(18))
   }
 }
