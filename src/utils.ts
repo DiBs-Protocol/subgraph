@@ -4,11 +4,18 @@ import { ReferralNFT } from "../generated/SymmDataSource/ReferralNFT"
 import { REFERRAL_NFT_ADDRESS } from "./config"
 
 function getReferrerNftId(user: Address): BigInt {
+  // returns 0 if the user has no referrer or the referrer is not a valid NFT
+
   const referralNft = ReferralNFT.bind(
     Address.fromHexString(REFERRAL_NFT_ADDRESS),
   )
+  const referrerNftId = referralNft.referrer(referralNft.tokenInUse(user))
 
-  return referralNft.referrer(referralNft.tokenInUse(user))
+  if (referralNft.isActiveReferrer(referrerNftId)) {
+    return referrerNftId
+  } else {
+    return BigInt.fromI32(0)
+  }
 }
 
 export function updateVolume(

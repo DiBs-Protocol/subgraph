@@ -17,8 +17,6 @@ export class LiquidatePositionsHandler extends Handler {
   }
 
   public handle(): void {
-    if (!this.isValid) return
-
     const ids = this.event.params.quoteIds
     for (let i = 0; i < ids.length; i++) {
       this._handle(ids[i])

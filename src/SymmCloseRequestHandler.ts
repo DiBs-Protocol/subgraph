@@ -17,8 +17,6 @@ export class CloseRequestHandler extends Handler {
   }
 
   public handle(): void {
-    if (!this.isValid) return
-
     this._handle()
   }
 

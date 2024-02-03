@@ -16,8 +16,6 @@ export class OpenPositionHandler extends Handler {
   }
 
   public handle(): void {
-    if (!this.isValid) return
-
     this._handle()
   }
 

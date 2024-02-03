@@ -4,24 +4,17 @@ import { MultiAccount } from "../generated/SymmDataSource/MultiAccount"
 
 export class Handler {
   private _event: ethereum.Event
-  isValid: boolean
   timestamp: BigInt
   day: BigInt
 
   constructor(event: ethereum.Event) {
-    this.timestamp = event.block.timestamp
+    const timestamp = event.block.timestamp
+    this.timestamp = timestamp
     this._event = event
-    const delta = event.block.timestamp.minus(
-      BigInt.fromI32(EPOCH_START_TIMESTAMP),
-    )
-
-    this.isValid = delta.ge(BigInt.fromI32(0))
-    this.day = delta.div(BigInt.fromI32(86400))
+    this.day = timestamp.div(BigInt.fromI32(86400))
   }
 
-  public handle(): void {
-    if (!this.isValid) return
-  }
+  public handle(): void {}
 
   public getQuoteObjectId(quoteId: BigInt): string {
     return this._event.address.toHexString() + quoteId.toString()
