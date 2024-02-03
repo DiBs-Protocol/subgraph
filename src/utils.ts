@@ -6,9 +6,7 @@ import { REFERRAL_NFT_ADDRESS } from "./config"
 function getReferrerNftId(user: Address): BigInt {
   // returns 0 if the user has no referrer or the referrer is not a valid NFT
 
-  const referralNft = ReferralNFT.bind(
-    Address.fromHexString(REFERRAL_NFT_ADDRESS),
-  )
+  const referralNft = ReferralNFT.bind(Address.fromString(REFERRAL_NFT_ADDRESS))
   const referrerNftId = referralNft.referrer(referralNft.tokenInUse(user))
 
   if (referralNft.isActiveReferrer(referrerNftId)) {
@@ -26,7 +24,7 @@ export function updateVolume(
 ): void {
   const referrerTokenId = getReferrerNftId(user)
   const userVolumeId =
-    user.toHex() + "-" + referrerTokenId + "-" + day.toString()
+    user.toHex() + "-" + referrerTokenId.toHexString() + "-" + day.toString()
 
   let acc = DailyGeneratedVolume.load(userVolumeId)
 
