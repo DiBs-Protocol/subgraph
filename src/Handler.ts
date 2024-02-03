@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts"
-import { EPOCH_START_TIMESTAMP, MULTI_ACCOUNT_ADDRESS } from "./config"
+import { MULTI_ACCOUNT_ADDRESS } from "./config"
 import { MultiAccount } from "../generated/SymmDataSource/MultiAccount"
 
 export class Handler {
